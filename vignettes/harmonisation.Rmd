@@ -1,0 +1,99 @@
+---
+title: "Cross-round harmonisation in ihsMW"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Cross-round harmonisation in ihsMW}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The Malawi Integrated Household Survey (IHS) is a cornerstone of socio-economic research in Sub-Saharan Africa. However, conducting longitudinal or cross-sectional analyses pooling multiple rounds traditionally requires hundreds of hours resolving structural disparities. The `ihsMW` package abstracts this friction, providing native cross-round harmonisation directly within R.
+
+## 1. Why harmonisation is needed
+
+The IHS survey instruments undergo systematic redesigns between rounds. As policy goals evolve and enumeration techniques improve, modules are shuffled, variables are renamed, and categorical response codes are completely restructured.
+
+For instance, consider the fundamental **Consumption Aggregate**. In IHS2, the primary real per capita consumption variable was tracked as `rexp_cat011` natively within the aggregates file. In IHS4, it was fundamentally shifted, and by IHS5, it merged definitions slightly demanding rigorous analyst verification.
+
+Similarly, **Food Security Indicators** like the Food Insecurity Experience Scale (FIES) were only rigorously standardized in later rounds. The variable denoting whether a household worried about not having enough food was labeled differently, and placed inside fundamentally different module prefixes across IHS3 and IHS5.
+
+## 2. How ihsMW handles harmonisation
+
+To resolve these inconsistencies, the `ihsMW` package bundles a static, manually curated crosswalk table. This crosswalk securely maps a single `harmonised_name` against the exact structural properties originally defined inside each survey round.
+
+The `harmonised_name` represents the consistent variable identifier you use when querying `ihsMW`. Internally, the package translates this name into the round-specific identifiers natively intercepting HTTP downloads masking the complexity. 
+
+You can inspect the underlying crosswalk schema natively:
+
+```{r eval=FALSE}
+library(ihsMW)
+
+# Load the raw crosswalk embedded inside the package
+cw <- read.csv(system.file("extdata", "ihs_crosswalk.csv", package = "ihsMW"))
+head(cw)
+```
+
+## 3. Checking coverage before analysis
+
+Before executing an analysis, it is critical to determine if your desired indicators were actually collected across your target rounds.
+
+The package exposes a macro-level validation tracker summarizing the crosswalk's health efficiently:
+
+```{r eval=FALSE}
+# Prints a report showing variable availability across rounds
+ihs_crosswalk_check()
+```
+
+To zero in on specific indicators, `ihs_search()` exposes exactly which rounds recorded the variable. You can manipulate the underlying `tibble` directly to review coverage:
+
+```{r eval=FALSE}
+library(dplyr)
+
+# Search for consumption and inspect coverage arrays
+ihs_search("consumption") |> 
+  select(harmonised_name, ihs2_name, ihs3_name, ihs4_name, ihs5_name)
+```
+
+## 4. Needs_review variables
+
+Some variables undergo semantic drift across rounds despite capturing fundamentally similar concepts. Our crosswalk flags these with a `needs_review = TRUE` boolean internally.
+
+When you query an indicator carrying this flag, `ihsMW` will emit a non-blocking `cli::cli_warn()` advising manual intervention. This flag signifies that while the variable structurally aligns, the underlying response options, specific definitions, or unit structures were fundamentally altered by the enumeration designers.
+
+When writing academic papers, if you utilize a flagged variable pooled across rounds, you should rigorously consult the Basic Information Document (BID) and explicitly outline your methodological assumptions normalizing the semantic differences in your data appendix.
+
+## 5. Multi-round worked example
+
+The harmonisation pipeline intercepts requests natively yielding pooled arrays iteratively appending tracking boundaries effortlessly. 
+
+```{r eval=FALSE}
+# Extract consumption metrics mapped identically across IHS3, IHS4, and IHS5
+df <- IHS("rexp_cat01", round = c("IHS3", "IHS4", "IHS5"))
+
+# The output natively includes an `ihs_round` character tracking origins
+df |>
+  group_by(ihs_round) |>
+  summarise(mean_cons = mean(rexp_cat01, na.rm = TRUE))
+```
+
+## 6. When NOT to use auto-harmonisation
+
+While `ihsMW` binds datasets effectively, auto-harmonisation is dangerous when explicit conceptual alignment is required but compromised inherently:
+
+1. **Variables with fundamentally different concepts.** If a module measured discrete 7-day recall in IHS3, but continuously tracked 14-day recall in IHS4 without conversion mappings mathematically recorded.
+2. **Value label changes.** Region codes may have been completely renumbered (e.g., District 104 becoming District 201) breaking factor mappings silently during numerical bindings.
+
+**Recommendation:** The harmonisation wrapper is not a substitute for due diligence. Always meticulously review the respective Basic Information Documents (BIDs) available on the World Bank Microdata Library ensuring your conceptual endpoints align securely.
+
+## 7. Contributing to the crosswalk
+
+The internal crosswalk is a living document rigorously curated by the community. You can suggest modifications, correct mapping errors, or map previously unlinked variables across surveys by contributing directly.
+
+Please submit mapping corrections explicitly tracking variable alignments to our [GitHub issues tracker](https://github.com/vituk123/ihsMW/issues) natively highlighting the module origins cleanly.

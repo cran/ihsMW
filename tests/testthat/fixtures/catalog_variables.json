@@ -1,0 +1,16 @@
+{
+  "variables": {
+    "variable": [
+      {"name": "case_id", "vid": "V1", "labl": "Unique household ID", "fid": "hh_mod_a_filt.dta"},
+      {"name": "rexp_cat01", "vid": "V2", "labl": "Per capita real consumption", "fid": "consumption_aggregate.dta"},
+      {"name": "hh_a02", "vid": "V3", "labl": "Household head sex", "fid": "hh_mod_a_filt.dta"},
+      {"name": "hh_size", "vid": "V4", "labl": "Household size", "fid": "hh_mod_a_filt.dta"},
+      {"name": "urban", "vid": "V5", "labl": "Urban/Rural", "fid": "hh_mod_a_filt.dta"},
+      {"name": "region", "vid": "V6", "labl": "Region", "fid": "hh_mod_a_filt.dta"},
+      {"name": "hhweight", "vid": "V7", "labl": "Household sampling weight", "fid": "hh_mod_a_filt.dta"},
+      {"name": "stratum", "vid": "V8", "labl": "Sampling stratum", "fid": "hh_mod_a_filt.dta"},
+      {"name": "ea_id", "vid": "V9", "labl": "Enumeration area ID", "fid": "hh_mod_a_filt.dta"},
+      {"name": "hh_a01", "vid": "V10", "labl": "District code", "fid": "hh_mod_a_filt.dta"}
+    ]
+  }
+}

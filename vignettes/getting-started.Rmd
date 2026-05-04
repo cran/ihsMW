@@ -1,0 +1,139 @@
+---
+title: "Getting started with ihsMW"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with ihsMW}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The `ihsMW` package provides programmatic access to the Malawi Integrated Household Survey (IHS) microdata hosted natively by the World Bank Microdata Library. By using `ihsMW`, you can reliably discover, harmonise, and download complex survey metrics directly into R, significantly accelerating academic analyses.
+
+## 1. Installation
+
+You can install the development version of `ihsMW` from GitHub using the `pak` or `remotes` package:
+
+```{r eval=FALSE}
+# Install from GitHub
+pak::pak("vituk123/ihsMW")
+# or
+remotes::install_github("vituk123/ihsMW")
+```
+
+*(Note: CRAN installation commands will be available once the package is officially published).*
+
+## 2. One-time setup
+
+The World Bank Microdata Library limits access to registered researchers. You must retrieve a free API Key to access survey records securely. 
+
+Run the authentication wizard directly from R. It will dynamically guide you toward generating an API key securely:
+
+```{r eval=FALSE}
+library(ihsMW)
+
+# Open the interactive authentication wizard
+ihs_auth()
+```
+
+This command will open the World Bank Microdata Library in your browser. Register, navigate to your profile, generate a token, and copy the string.
+
+Then, register your key within the package seamlessly:
+
+```{r eval=FALSE}
+ihs_auth("your_alphanumeric_api_key_goes_here")
+```
+
+This procedure only needs to be completed once mapping your credentials persistently to your `~/.Renviron` profile securely on your local device.
+
+## 3. Finding variables
+
+The `ihsMW` package maintains an internal harmonisation crosswalk mapping thousands of distinct metrics accurately tracking naming disparities across distinct rounds (IHS2 to IHS5). 
+
+You can explicitly search this map utilizing descriptive keywords:
+
+```{r eval=FALSE}
+# Look up variables related to consumption
+ihs_search("consumption")
+```
+
+Alternatively, restrict your query natively capturing data specifically from an explicit survey round implicitly avoiding unnecessary scope overlaps:
+
+```{r eval=FALSE}
+# Find age-related variables specifically monitored during IHS5
+ihs_search("age", round = "IHS5")
+```
+
+Should you wish to review variables explicitly inside their raw survey contexts, explore modules seamlessly natively leveraging the World Bank infrastructure:
+
+```{r eval=FALSE}
+# Look at all modules administered in IHS5
+ihs_modules("IHS5")
+```
+
+Use `ihs_label()` natively referencing Stata attributes preserving explicit meaning behind discrete identifiers exactly mirroring internal documentation structures natively:
+
+```{r eval=FALSE}
+ihs_label("rexp_cat01")
+```
+
+## 4. Downloading data
+
+Once your targeted harmonised variables are identified, use the overarching `IHS()` extractor capturing raw microdata formatting seamlessly binding values natively resolving dependencies securely across cache targets without rigid management requirements.
+
+Acquire standalone elements cleanly extracting structural representations iteratively locally:
+
+```{r eval=FALSE}
+# Simple extraction targeted against IHS5
+df_simple <- IHS("rexp_cat01", round = "IHS5")
+```
+
+The true power of `ihsMW` extends gracefully targeting multiple variables pooled simultaneously across disjointed rounds without manual file joining restrictions matching parameters reliably natively:
+
+```{r eval=FALSE}
+# Multi-round pooled extractions mapping harmonisations intelligently
+df_multi <- IHS(c("rexp_cat01", "hh_a02"), round = c("IHS4", "IHS5"))
+```
+
+The pooled structure integrates an explicit `ihs_round` character string isolating origins intelligently supporting explicit group derivations cleanly binding `data.frame` layers exactly natively accurately.
+
+**Caching Integration**: `ihsMW` downloads raw components saving parameters directly onto persistent native disk locations ensuring data remains cached persistently seamlessly avoiding redundant API hits natively!
+
+## 5. A complete worked example
+
+The following blocks detail a standard end-to-end integration mapping discovery against consumption distributions smoothly integrating visualization bindings securely directly formatting outputs correctly.
+
+```{r eval=FALSE}
+library(ihsMW)
+library(dplyr)
+library(ggplot2)
+
+# Find the consumption variable
+ihs_search("per capita consumption")
+
+# Download IHS5 consumption data
+df <- IHS("rexp_cat01", round = "IHS5")
+
+# Quick summary
+df |> summarise(mean_cons = mean(rexp_cat01, na.rm = TRUE))
+
+# Simple histogram
+ggplot(df, aes(x = rexp_cat01)) +
+  geom_histogram(bins = 50) +
+  labs(title = "Distribution of per capita consumption, Malawi IHS5")
+```
+
+## 6. Citation
+
+When publishing research utilizing datasets harmonized or accessed via `ihsMW`, you must rigorously cite the sampling procedures matching precise documents natively guaranteeing attribution accurately tracking standard rules.
+
+Always cite both the NSO Malawi and the World Bank LSMS natively recognizing precise structures smoothly linking contributions reliably! 
+
+For IHS5:
+National Statistical Office. **Malawi - Fifth Integrated Household Survey 2019-2020.** Ref: MWI_2019_IHS-V_v06_M. URL: https://microdata.worldbank.org/index.php/catalog/3818

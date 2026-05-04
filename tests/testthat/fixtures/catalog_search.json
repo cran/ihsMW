@@ -1,0 +1,42 @@
+{
+  "result": {
+    "found": 5,
+    "rows": [
+      {
+        "idno": "MWI_2019_IHS-V_v06_M",
+        "title": "Malawi - Fifth Integrated Household Survey 2019-2020",
+        "nation": "Malawi",
+        "year_start": "2019",
+        "year_end": "2020"
+      },
+      {
+        "idno": "MWI_2016_IHS-IV_v03_M",
+        "title": "Malawi - Fourth Integrated Household Survey 2016-2017",
+        "nation": "Malawi",
+        "year_start": "2016",
+        "year_end": "2017"
+      },
+      {
+        "idno": "MWI_2010_IHS-III_v01_M",
+        "title": "Malawi - Third Integrated Household Survey 2010-2011",
+        "nation": "Malawi",
+        "year_start": "2010",
+        "year_end": "2011"
+      },
+      {
+        "idno": "MWI_2004_IHS-II_v01_M",
+        "title": "Malawi - Second Integrated Household Survey 2004-2005",
+        "nation": "Malawi",
+        "year_start": "2004",
+        "year_end": "2005"
+      },
+      {
+        "idno": "MWI_2019_IHS-V_v06_M",
+        "title": "Malawi IHS5 Panel Dataset 2019",
+        "nation": "Malawi",
+        "year_start": "2019",
+        "year_end": "2020"
+      }
+    ]
+  }
+}

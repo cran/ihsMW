@@ -1,0 +1,9 @@
+{
+  "dataset": {
+    "data_files": [
+      {"file_id": "F1", "file_name": "hh_mod_a_filt.dta", "format": "Stata"},
+      {"file_id": "F2", "file_name": "consumption_aggregate.dta", "format": "Stata"},
+      {"file_id": "F3", "file_name": "hh_mod_g.dta", "format": "Stata"}
+    ]
+  }
+}
