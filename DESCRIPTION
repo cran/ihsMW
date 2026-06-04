@@ -1,35 +1,32 @@
 Package: ihsMW
-Title: Access 'Malawi Integrated Household Survey' Data
-Version: 0.1.5
+Title: Clean and Harmonise 'Malawi Integrated Household Survey' Data
+Version: 0.2.1
 Authors@R: person("Vitumbiko", "Kayuni",
              email = "vitumbikokayuni@gmail.com",
              role = c("aut", "cre"),
              comment = c(ORCID = "0009-0008-4331-3839"))
-Description: Provides programmatic access to the 'Malawi Integrated Household
-    Survey' ('IHS') via the 'World Bank Microdata Library' API
-    <https://microdata.worldbank.org/api-documentation/>. Users can search
-    variables, download data for 'IHS' rounds 2 through 5, and work with complex
-    survey designs, with no manual file management required.
+Description: An offline suite of tools to clean, aggregate, and harmonise data 
+    from the 'Malawi Integrated Household Survey' ('IHS'). Provides crop-specific 
+    unit conversions, stratified winsorization, and automatic cross-round harmonisation 
+    for complex survey designs.
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
 URL: https://github.com/vituk123/ihsMW
 BugReports: https://github.com/vituk123/ihsMW/issues
-Imports: httr2 (>= 1.0.0), arrow (>= 12.0.0), dplyr (>= 1.1.0), readr
-        (>= 2.1.0), rlang (>= 1.1.0), cli (>= 3.6.0), rappdirs (>=
-        0.3.3), vctrs (>= 0.6.0), stringdist (>= 0.9.10)
-Suggests: srvyr (>= 1.2.0), survey (>= 4.2.0), httptest2 (>= 0.1.0),
-        testthat (>= 3.0.0), usethis (>= 2.2.0), pkgdown (>= 2.0.0),
-        knitr (>= 1.40), rmarkdown (>= 2.20), withr (>= 2.5.0),
-        jsonlite (>= 1.8.0)
+Imports: dplyr (>= 1.1.0), readr (>= 2.1.0), rlang (>= 1.1.0), cli (>=
+        3.6.0)
+Suggests: srvyr (>= 1.2.0), survey (>= 4.2.0), testthat (>= 3.0.0),
+        usethis (>= 2.2.0), pkgdown (>= 2.0.0), knitr (>= 1.40),
+        rmarkdown (>= 2.20), withr (>= 2.5.0), jsonlite (>= 1.8.0)
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
 NeedsCompilation: no
-Packaged: 2026-04-29 18:43:17 UTC; vitumbikokayuni
+Packaged: 2026-06-04 18:35:40 UTC; vitumbikokayuni
 Author: Vitumbiko Kayuni [aut, cre] (ORCID:
     <https://orcid.org/0009-0008-4331-3839>)
 Maintainer: Vitumbiko Kayuni <vitumbikokayuni@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-05-04 11:40:02 UTC
+Date/Publication: 2026-06-04 20:30:02 UTC

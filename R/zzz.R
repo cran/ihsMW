@@ -1,9 +1,8 @@
-.onAttach <- function(libname, pkgname) {
-  if (!nzchar(Sys.getenv("WORLDBANK_MICRODATA_KEY"))) {
-    packageStartupMessage("ihsMW: No API key found. Run ihs_auth() to enable data downloads.")
-  }
-}
+.ihs_cache <- new.env(parent = emptyenv())
 
+.onAttach <- function(libname, pkgname) {
+  packageStartupMessage("ihsMW: Dedicated offline cleaning suite loaded.")
+}
 if (getRversion() >= "2.15.1") {
   utils::globalVariables(c(
     "IHS_survey", "file_name", "file_id", "n_variables", "harmonised_name", "label",

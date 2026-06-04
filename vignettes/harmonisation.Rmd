@@ -71,14 +71,29 @@ When writing academic papers, if you utilize a flagged variable pooled across ro
 
 ## 5. Multi-round worked example
 
-The harmonisation pipeline intercepts requests natively yielding pooled arrays iteratively appending tracking boundaries effortlessly. 
+The harmonisation pipeline intercepts raw loaded dataframes and renames columns seamlessly based on the internal crosswalk.
 
-```{r eval=FALSE}
-# Extract consumption metrics mapped identically across IHS3, IHS4, and IHS5
-df <- IHS("rexp_cat01", round = c("IHS3", "IHS4", "IHS5"))
+```r
+library(ihsMW)
+library(haven)
+library(dplyr)
 
-# The output natively includes an `ihs_round` character tracking origins
-df |>
+# 1. Load your manually downloaded data
+# Example: Using the household module from IHS3 and IHS4
+ihs3_raw <- read_dta("path/to/IHS3/hh_mod_a_filt.dta")
+ihs4_raw <- read_dta("path/to/IHS4/hh_mod_a_filt.dta")
+
+# 2. Harmonise column names automatically to the cross-round standard
+ihs3_harmonised <- ihs_harmonise(ihs3_raw, round = "IHS3")
+ihs4_harmonised <- ihs_harmonise(ihs4_raw, round = "IHS4")
+
+# 3. Bind the rounds securely
+# Because the columns are harmonised, they bind cleanly.
+# The `ihs_round` character vector is natively appended to track origins.
+df_pooled <- bind_rows(ihs3_harmonised, ihs4_harmonised)
+
+# 4. Analyze cross-round trends
+df_pooled |>
   group_by(ihs_round) |>
   summarise(mean_cons = mean(rexp_cat01, na.rm = TRUE))
 ```

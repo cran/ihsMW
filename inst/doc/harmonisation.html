@@ -48,8 +48,9 @@ overflow: visible;
 }
 </style>
 <style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -60,7 +61,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -416,16 +417,30 @@ appendix.</p>
 </div>
 <div id="multi-round-worked-example" class="section level2">
 <h2>5. Multi-round worked example</h2>
-<p>The harmonisation pipeline intercepts requests natively yielding
-pooled arrays iteratively appending tracking boundaries
-effortlessly.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Extract consumption metrics mapped identically across IHS3, IHS4, and IHS5</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">IHS</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="at">round =</span> <span class="fu">c</span>(<span class="st">&quot;IHS3&quot;</span>, <span class="st">&quot;IHS4&quot;</span>, <span class="st">&quot;IHS5&quot;</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># The output natively includes an `ihs_round` character tracking origins</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>df <span class="sc">|&gt;</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="fu">group_by</span>(ihs_round) <span class="sc">|&gt;</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_cons =</span> <span class="fu">mean</span>(rexp_cat01, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
+<p>The harmonisation pipeline intercepts raw loaded dataframes and
+renames columns seamlessly based on the internal crosswalk.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># 1. Load your manually downloaded data</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Example: Using the household module from IHS3 and IHS4</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>ihs3_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS3/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>ihs4_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS4/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># 2. Harmonise column names automatically to the cross-round standard</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>ihs3_harmonised <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs3_raw, <span class="at">round =</span> <span class="st">&quot;IHS3&quot;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>ihs4_harmonised <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs4_raw, <span class="at">round =</span> <span class="st">&quot;IHS4&quot;</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># 3. Bind the rounds securely</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># Because the columns are harmonised, they bind cleanly.</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co"># The `ihs_round` character vector is natively appended to track origins.</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>df_pooled <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs3_harmonised, ihs4_harmonised)</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># 4. Analyze cross-round trends</span></span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>df_pooled <span class="sc">|&gt;</span></span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">group_by</span>(ihs_round) <span class="sc">|&gt;</span></span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_cons =</span> <span class="fu">mean</span>(rexp_cat01, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
 </div>
 <div id="when-not-to-use-auto-harmonisation" class="section level2">
 <h2>6. When NOT to use auto-harmonisation</h2>

@@ -22,12 +22,3 @@ knitr::opts_chunk$set(
 # ihs_search("consumption") |>
 #   select(harmonised_name, ihs2_name, ihs3_name, ihs4_name, ihs5_name)
 
-## ----eval=FALSE---------------------------------------------------------------
-# # Extract consumption metrics mapped identically across IHS3, IHS4, and IHS5
-# df <- IHS("rexp_cat01", round = c("IHS3", "IHS4", "IHS5"))
-# 
-# # The output natively includes an `ihs_round` character tracking origins
-# df |>
-#   group_by(ihs_round) |>
-#   summarise(mean_cons = mean(rexp_cat01, na.rm = TRUE))
-
