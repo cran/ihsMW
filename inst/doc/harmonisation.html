@@ -12,7 +12,7 @@
 
 
 
-<title>Cross-round harmonisation in ihsMW</title>
+<title>Cross-round harmonisation</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -337,139 +337,111 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Cross-round harmonisation in ihsMW</h1>
+<h1 class="title toc-ignore">Cross-round harmonisation</h1>
 
 
 
-<p>The Malawi Integrated Household Survey (IHS) is a cornerstone of
-socio-economic research in Sub-Saharan Africa. However, conducting
-longitudinal or cross-sectional analyses pooling multiple rounds
-traditionally requires hundreds of hours resolving structural
-disparities. The <code>ihsMW</code> package abstracts this friction,
-providing native cross-round harmonisation directly within R.</p>
-<div id="why-harmonisation-is-needed" class="section level2">
-<h2>1. Why harmonisation is needed</h2>
-<p>The IHS survey instruments undergo systematic redesigns between
-rounds. As policy goals evolve and enumeration techniques improve,
-modules are shuffled, variables are renamed, and categorical response
-codes are completely restructured.</p>
-<p>For instance, consider the fundamental <strong>Consumption
-Aggregate</strong>. In IHS2, the primary real per capita consumption
-variable was tracked as <code>rexp_cat011</code> natively within the
-aggregates file. In IHS4, it was fundamentally shifted, and by IHS5, it
-merged definitions slightly demanding rigorous analyst verification.</p>
-<p>Similarly, <strong>Food Security Indicators</strong> like the Food
-Insecurity Experience Scale (FIES) were only rigorously standardized in
-later rounds. The variable denoting whether a household worried about
-not having enough food was labeled differently, and placed inside
-fundamentally different module prefixes across IHS3 and IHS5.</p>
+<p>Comparing indicators across multiple survey rounds is essential for
+longitudinal policy evaluation. However, structural differences across
+the survey instruments pose a major barrier. This vignette walks through
+how <code>ihsMW</code> streamlines cross-round harmonisation and
+analysis.</p>
+<div id="the-harmonisation-challenge" class="section level2">
+<h2>1. The Harmonisation Challenge</h2>
+<p>Over the years, the Malawi Integrated Household Survey (IHS)
+questionnaires have evolved. Variables are added, retired, renamed, or
+relocated to different modules.</p>
+<p>For instance, the household size indicator is named
+<code>hhsize</code> in some files, <code>hh_size</code> in others, or is
+represented by variables counting household members. Similarly, nominal
+consumption expenditure variables and agricultural crop names frequently
+change, making direct cross-round comparisons error-prone and
+tedious.</p>
 </div>
-<div id="how-ihsmw-handles-harmonisation" class="section level2">
-<h2>2. How ihsMW handles harmonisation</h2>
-<p>To resolve these inconsistencies, the <code>ihsMW</code> package
-bundles a static, manually curated crosswalk table. This crosswalk
-securely maps a single <code>harmonised_name</code> against the exact
-structural properties originally defined inside each survey round.</p>
-<p>The <code>harmonised_name</code> represents the consistent variable
-identifier you use when querying <code>ihsMW</code>. Internally, the
-package translates this name into the round-specific identifiers
-natively intercepting HTTP downloads masking the complexity.</p>
-<p>You can inspect the underlying crosswalk schema natively:</p>
+<div id="the-crosswalk" class="section level2">
+<h2>2. The Crosswalk</h2>
+<p>To resolve this, <code>ihsMW</code> bundles a static crosswalk
+database containing mappings for over 5,800 variables across IHS2, IHS3,
+IHS4, and IHS5. It acts as a translation layer, mapping round-specific
+variable names to consistent, harmonised names.</p>
+<p>You can inspect the crosswalk programmatically:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Load the raw crosswalk embedded inside the package</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>cw <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ihs_crosswalk.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;ihsMW&quot;</span>))</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">head</span>(cw)</span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Read the crosswalk</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>crosswalk <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;ihs_crosswalk.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;ihsMW&quot;</span>))</span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="fu">head</span>(crosswalk)</span></code></pre></div>
 </div>
-<div id="checking-coverage-before-analysis" class="section level2">
-<h2>3. Checking coverage before analysis</h2>
-<p>Before executing an analysis, it is critical to determine if your
-desired indicators were actually collected across your target
-rounds.</p>
-<p>The package exposes a macro-level validation tracker summarizing the
-crosswalk’s health efficiently:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Prints a report showing variable availability across rounds</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>()</span></code></pre></div>
-<p>To zero in on specific indicators, <code>ihs_search()</code> exposes
-exactly which rounds recorded the variable. You can manipulate the
-underlying <code>tibble</code> directly to review coverage:</p>
+<div id="basic-harmonisation" class="section level2">
+<h2>3. Basic Harmonisation</h2>
+<p>Use <code>ihs_harmonise()</code> to standardise column names in raw
+dataframes:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Load IHS4 raw household module</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>ihs4_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS4/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Harmonise to standard names</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>ihs4_clean <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs4_raw, <span class="at">round =</span> <span class="st">&quot;IHS4&quot;</span>)</span></code></pre></div>
+</div>
+<div id="multi-round-panel-work" class="section level2">
+<h2>4. Multi-round Panel Work</h2>
+<p>To compile a cross-round dataset for longitudinal analysis, load the
+data from each round, harmonise them separately, and bind them
+together:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Search for consumption and inspect coverage arrays</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;consumption&quot;</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">select</span>(harmonised_name, ihs2_name, ihs3_name, ihs4_name, ihs5_name)</span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Load and harmonise IHS4</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>ihs4_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS4/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>ihs4_harm <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs4_raw, <span class="at">round =</span> <span class="st">&quot;IHS4&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Load and harmonise IHS5</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>ihs5_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>ihs5_harm <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs5_raw, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Bind rows - ihs_harmonise adds an `ihs_round` column automatically</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>pooled_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs4_harm, ihs5_harm)</span></code></pre></div>
 </div>
-<div id="needs_review-variables" class="section level2">
-<h2>4. Needs_review variables</h2>
-<p>Some variables undergo semantic drift across rounds despite capturing
-fundamentally similar concepts. Our crosswalk flags these with a
-<code>needs_review = TRUE</code> boolean internally.</p>
-<p>When you query an indicator carrying this flag, <code>ihsMW</code>
-will emit a non-blocking <code>cli::cli_warn()</code> advising manual
-intervention. This flag signifies that while the variable structurally
-aligns, the underlying response options, specific definitions, or unit
-structures were fundamentally altered by the enumeration designers.</p>
-<p>When writing academic papers, if you utilize a flagged variable
-pooled across rounds, you should rigorously consult the Basic
-Information Document (BID) and explicitly outline your methodological
-assumptions normalizing the semantic differences in your data
-appendix.</p>
-</div>
-<div id="multi-round-worked-example" class="section level2">
-<h2>5. Multi-round worked example</h2>
-<p>The harmonisation pipeline intercepts raw loaded dataframes and
-renames columns seamlessly based on the internal crosswalk.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<div id="merging-modules" class="section level2">
+<h2>5. Merging Modules</h2>
+<p>Within a single survey round, information is split across multiple
+modules (e.g., household demographics, agriculture, food consumption).
+Use <code>ihs_merge()</code> to merge these dataframes:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load household demographics and crop harvest modules</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>hh_demog <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>hh_agri <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/ag_mod_i.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
 <span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># 1. Load your manually downloaded data</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Example: Using the household module from IHS3 and IHS4</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>ihs3_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS3/hh_mod_a_filt.dta&quot;</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>ihs4_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS4/hh_mod_a_filt.dta&quot;</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co"># 2. Harmonise column names automatically to the cross-round standard</span></span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>ihs3_harmonised <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs3_raw, <span class="at">round =</span> <span class="st">&quot;IHS3&quot;</span>)</span>
-<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>ihs4_harmonised <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs4_raw, <span class="at">round =</span> <span class="st">&quot;IHS4&quot;</span>)</span>
-<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co"># 3. Bind the rounds securely</span></span>
-<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co"># Because the columns are harmonised, they bind cleanly.</span></span>
-<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co"># The `ihs_round` character vector is natively appended to track origins.</span></span>
-<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>df_pooled <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs3_harmonised, ihs4_harmonised)</span>
-<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
-<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="co"># 4. Analyze cross-round trends</span></span>
-<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>df_pooled <span class="sc">|&gt;</span></span>
-<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="fu">group_by</span>(ihs_round) <span class="sc">|&gt;</span></span>
-<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_cons =</span> <span class="fu">mean</span>(rexp_cat01, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Merge modules - automatically detects common ID columns (e.g., case_id)</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(hh_demog, hh_agri)</span></code></pre></div>
+<p><code>ihs_merge()</code> checks if the join type results in
+unexpected row expansion and issues a warning if many-to-many joins
+occur.</p>
 </div>
-<div id="when-not-to-use-auto-harmonisation" class="section level2">
-<h2>6. When NOT to use auto-harmonisation</h2>
-<p>While <code>ihsMW</code> binds datasets effectively,
-auto-harmonisation is dangerous when explicit conceptual alignment is
-required but compromised inherently:</p>
-<ol style="list-style-type: decimal">
-<li><strong>Variables with fundamentally different concepts.</strong> If
-a module measured discrete 7-day recall in IHS3, but continuously
-tracked 14-day recall in IHS4 without conversion mappings mathematically
-recorded.</li>
-<li><strong>Value label changes.</strong> Region codes may have been
-completely renumbered (e.g., District 104 becoming District 201)
-breaking factor mappings silently during numerical bindings.</li>
-</ol>
-<p><strong>Recommendation:</strong> The harmonisation wrapper is not a
-substitute for due diligence. Always meticulously review the respective
-Basic Information Documents (BIDs) available on the World Bank Microdata
-Library ensuring your conceptual endpoints align securely.</p>
+<div id="price-deflation" class="section level2">
+<h2>6. Price Deflation</h2>
+<p>When comparing monetary values (e.g., household consumption, crop
+sales) across different years, nominal values must be deflated to
+account for inflation. <code>ihs_deflate()</code> uses bundled Malawi
+Consumer Price Index (CPI) data to convert nominal values to real
+values, with 2019 (IHS5 baseline) as the default reference year:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Deflate expenditure variables to 2019 real prices</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>real_data <span class="ot">&lt;-</span> <span class="fu">ihs_deflate</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">data =</span> pooled_data,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">value_cols =</span> <span class="fu">c</span>(<span class="st">&quot;consumption_nominal&quot;</span>, <span class="st">&quot;food_exp_nominal&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># This creates new columns: `consumption_nominal_real` and `food_exp_nominal_real`</span></span></code></pre></div>
 </div>
-<div id="contributing-to-the-crosswalk" class="section level2">
-<h2>7. Contributing to the crosswalk</h2>
-<p>The internal crosswalk is a living document rigorously curated by the
-community. You can suggest modifications, correct mapping errors, or map
-previously unlinked variables across surveys by contributing
-directly.</p>
-<p>Please submit mapping corrections explicitly tracking variable
-alignments to our <a href="https://github.com/vituk123/ihsMW/issues">GitHub issues
-tracker</a> natively highlighting the module origins cleanly.</p>
+<div id="quality-checks" class="section level2">
+<h2>7. Quality Checks</h2>
+<p>To verify that the crosswalk mappings are valid and check how many
+variables are successfully mapped, use
+<code>ihs_crosswalk_check()</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>()</span></code></pre></div>
+<p>Additionally, <code>ihs_panel_ids()</code> returns the standard ID
+columns (e.g. household ID, individual ID, enumeration area ID, strata,
+weights) for a given round to help you construct panel keys or verify
+design structures:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Get standard ID columns for IHS5</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
 </div>
 
 

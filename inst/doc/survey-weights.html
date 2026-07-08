@@ -12,7 +12,7 @@
 
 
 
-<title>Using survey weights with ihsMW</title>
+<title>Working with survey weights</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -337,163 +337,126 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Using survey weights with ihsMW</h1>
+<h1 class="title toc-ignore">Working with survey weights</h1>
 
 
 
-<p>For researchers targeting population-representative estimates,
-accounting for the complex survey design of the Malawi Integrated
-Household Survey (IHS) is non-negotiable. The <code>ihsMW</code> package
-abstracts the tedious configuration of these designs, integrating
-directly with existing R infrastructure to provide statistically sound
-representations natively.</p>
-<div id="why-weights-matter" class="section level2">
-<h2>1. Why weights matter</h2>
-<p>The IHS utilizes a <strong>stratified two-stage cluster
-sample</strong> design explicitly mapped to represent the national
-population, rural/urban disparities, and specific geographical districts
-simultaneously.</p>
-<p>Unweighted means are <strong>NOT</strong> nationally representative.
-Computing a simple average across an unweighted <code>data.frame</code>
-yields biased estimates skewed by disproportionate sampling allocations
-inherent to rural versus urban tracks.</p>
-<blockquote>
-<p>“Overall, the IHS5 sample design is a stratified two-stage sample…
-Therefore, it is imperative that the survey weights be used when making
-national-level or regional-level estimates.” — <em>National Statistical
-Office (2020), IHS5 Basic Information Document, Sampling
-Section.</em></p>
-</blockquote>
+<p>The Malawi Integrated Household Survey (IHS) series uses complex
+sampling designs rather than Simple Random Sampling (SRS). To obtain
+unbiased, population-representative estimates, survey weights,
+stratification, and clustering must be accounted for. This vignette
+describes how to set up and use survey designs with
+<code>ihsMW</code>.</p>
+<div id="why-survey-weights-matter" class="section level2">
+<h2>1. Why Survey Weights Matter</h2>
+<p>To reduce fieldwork costs and improve accuracy, the Malawi National
+Statistical Office (NSO) designs the IHS using a <strong>stratified
+two-stage cluster sample</strong>. - <strong>Strata</strong>: Usually
+defined by districts split into urban and rural areas. - <strong>Primary
+Sampling Units (PSUs)</strong>: The Enumeration Areas (EAs) selected in
+the first stage. - <strong>Survey Weights</strong>: Inverted
+probabilities of selection, adjusted for non-response.</p>
+<p>Because different households have different probabilities of
+selection (e.g. rural households might be over- or under-sampled
+relative to urban ones), unweighted statistics will be biased. Standard
+errors computed without accounting for clustering and stratification
+will also be incorrectly narrow.</p>
 </div>
-<div id="the-ihs_survey-function" class="section level2">
-<h2>2. The IHS_survey() function</h2>
-<p>To bridge the gap between raw data downloads and proper statistical
-weights seamlessly, <code>ihsMW</code> provides the
-<code>IHS_survey()</code> function. This wrapper extracts the intended
-indicators alongside their underlying survey dimensions dynamically.</p>
+<div id="setting-up-the-design" class="section level2">
+<h2>2. Setting Up the Design</h2>
+<p>The <code>ihs_svydesign()</code> function creates a survey design
+object by wrapping <code>survey::svydesign()</code>. It automatically
+detects standard weight, strata, and PSU columns inside your harmonised
+dataset:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># Automatically intercept consumption variables and inject structural weighting</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>svy <span class="ot">&lt;-</span> <span class="fu">IHS_survey</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co"># The output natively masks as a tbl_svy allowing tidy-eval manipulation</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">class</span>(svy)</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; [1] &quot;tbl_svy&quot;     &quot;svydesign2&quot;  &quot;svydesign&quot;</span></span></code></pre></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co"># Load and harmonise IHS5 data</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>harmonised_data <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(raw_data, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># Create survey design object</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Automatically detects: hh_wgt/hhweight, stratum/strata, and ea_id/psu</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(harmonised_data)</span></code></pre></div>
+<p>If the standard columns are named differently in your data, you can
+specify them explicitly:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">weight_col =</span> <span class="st">&quot;custom_weight&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">strata_col =</span> <span class="st">&quot;custom_strata&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">psu_col =</span> <span class="st">&quot;custom_ea&quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="computing-weighted-estimates" class="section level2">
-<h2>3. Computing weighted estimates</h2>
-<p>Once instantiated, the survey object behaves exactly as a standard
-complex environment gracefully tracking variances internally.</p>
-<p>If you prefer classic structural base approximations using the
-<code>survey</code> package:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Compute the statistically accurate, nationally representative average</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>rexp_cat01, <span class="at">design =</span> svy, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co"># Segment the nationally representative consumption by explicit strata</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>rexp_cat01, <span class="sc">~</span>stratum, svy, svymean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>Alternatively, leverage the <code>srvyr</code> package bridging
-<code>dplyr</code> pipelines into weighted topologies intuitively:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<div id="weighted-analysis" class="section level2">
+<h2>3. Weighted Analysis</h2>
+<p>Once you have the survey design object, you can compute
+representative statistics using the <code>survey</code> package:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Tidy-style summaries mapping the underlying survey dimensions natively</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>svy <span class="sc">|&gt;</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  <span class="fu">group_by</span>(stratum) <span class="sc">|&gt;</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">mean_cons =</span> <span class="fu">survey_mean</span>(rexp_cat01, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co"># Nationally representative mean of household size</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="fu">svymean</span>(<span class="sc">~</span>hhsize, <span class="at">design =</span> design, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co"># Nationally representative total of expenditure</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">svytotal</span>(<span class="sc">~</span>food_exp, <span class="at">design =</span> design, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Calculate means grouped by a factor variable (e.g., region)</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">svyby</span>(<span class="sc">~</span>food_exp, <span class="sc">~</span>region, <span class="at">design =</span> design, svymean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </div>
-<div id="multi-round-weighted-analysis" class="section level2">
-<h2>4. Multi-round weighted analysis</h2>
-<p>Because population sizes, spatial mapping coordinates, and primary
-sampling units fundamentally shift globally between cross-sectional
-spans, survey objects targeting discrete rounds <strong>should NOT be
-intelligently pooled naively</strong> under a unified statistical
-architecture without intensive independent reweighting operations.</p>
-<p>Instead, when querying multiple rounds natively,
-<code>IHS_survey()</code> protects inferences iteratively yielding a
-distinct instantiated named list structure explicitly encapsulating the
-unique configurations cleanly.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Requesting pooled objects targets isolated arrays preserving isolated bounds</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>svy_list <span class="ot">&lt;-</span> <span class="fu">IHS_survey</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="at">round =</span> <span class="fu">c</span>(<span class="st">&quot;IHS4&quot;</span>, <span class="st">&quot;IHS5&quot;</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Apply functional iteration computing the unique representation safely</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">lapply</span>(svy_list, <span class="cf">function</span>(s) {</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  survey<span class="sc">::</span><span class="fu">svymean</span>(<span class="sc">~</span>rexp_cat01, <span class="at">design =</span> s, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>})</span></code></pre></div>
+<div id="using-srvyr" class="section level2">
+<h2>4. Using srvyr</h2>
+<p>If you prefer <code>dplyr</code>-like syntax, the <code>srvyr</code>
+package works seamlessly with the survey design objects generated by
+<code>ihs_svydesign()</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(srvyr)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># Convert to srvyr design object</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>srvyr_design <span class="ot">&lt;-</span> <span class="fu">as_survey</span>(design)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co"># Calculate summary statistics using dplyr verbs</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>summary_stats <span class="ot">&lt;-</span> srvyr_design <span class="sc">|&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  <span class="fu">group_by</span>(region) <span class="sc">|&gt;</span></span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>    <span class="at">mean_exp =</span> <span class="fu">survey_mean</span>(food_exp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>    <span class="at">total_exp =</span> <span class="fu">survey_total</span>(food_exp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
-<div id="weight-variables-per-round" class="section level2">
-<h2>5. Weight variables per round</h2>
-<p><code>ihsMW</code> relies on a hard-coded internal mapping dictating
-the string topologies targeted during object instantiation
-dynamically.</p>
-<table>
-<thead>
-<tr class="header">
-<th>Round</th>
-<th><code>weight_var</code></th>
-<th><code>strata_var</code></th>
-<th><code>cluster_var</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>IHS1</td>
-<td><code>wght</code></td>
-<td><code>stratum</code></td>
-<td><code>ea_id</code></td>
-</tr>
-<tr class="even">
-<td>IHS2</td>
-<td><code>hh_wgt</code></td>
-<td><code>stratum</code></td>
-<td><code>ea_code</code></td>
-</tr>
-<tr class="odd">
-<td>IHS3</td>
-<td><code>hh_wgt</code></td>
-<td><code>stratum</code></td>
-<td><code>ea_id</code></td>
-</tr>
-<tr class="even">
-<td>IHS4</td>
-<td><code>hh_wgt</code></td>
-<td><code>stratum</code></td>
-<td><code>ea_id</code></td>
-</tr>
-<tr class="odd">
-<td>IHS5</td>
-<td><code>hhweight</code></td>
-<td><code>stratum</code></td>
-<td><code>ea_id</code></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Crucial Warning:</strong> These mappings are assumed static
-but should always be independently verified by the researcher. You must
-actively cross-reference these fields against the explicit <a href="https://microdata.worldbank.org/index.php/catalog">World Bank
-Microdata Library BIDs</a> natively avoiding invalid proxy mappings
-implicitly.</p>
+<div id="summary-statistics" class="section level2">
+<h2>5. Summary Statistics</h2>
+<p><code>ihsMW</code> provides <code>ihs_report()</code>, which computes
+a clean summary statistics table for publication. It supports survey
+weights directly:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Generate a summary statistics table with survey weights</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>report_tbl <span class="ot">&lt;-</span> <span class="fu">ihs_report</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;hhsize&quot;</span>, <span class="st">&quot;food_exp&quot;</span>, <span class="st">&quot;nonfood_exp&quot;</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="at">weights =</span> <span class="st">&quot;hh_wgt&quot;</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>)</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">print</span>(report_tbl)</span></code></pre></div>
+<p>You can also compute these weighted tables grouped by another
+variable:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Grouped weighted summary statistics</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>report_grouped <span class="ot">&lt;-</span> <span class="fu">ihs_report</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;hhsize&quot;</span>, <span class="st">&quot;food_exp&quot;</span>),</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;region&quot;</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">weights =</span> <span class="st">&quot;hh_wgt&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="common-mistakes" class="section level2">
-<h2>6. Common mistakes</h2>
-<p>Researchers approaching the package frequently implement standard
-code workflows resulting in structurally invalid endpoints natively:</p>
+<div id="common-pitfalls" class="section level2">
+<h2>6. Common Pitfalls</h2>
 <ul>
-<li><strong>Using raw <code>IHS()</code> outcomes:</strong> Extracting
-variables exclusively natively bypassing survey targets avoids
-structural weights natively skewing estimates entirely inappropriately.
-Always utilize <code>IHS_survey()</code> if inference depends on
-it.</li>
-<li><strong>Naive pooling across bounds:</strong> Extracting
-<code>IHS(round = &quot;all&quot;)</code> into a static <code>.dta</code>
-equivalent and independently wrapping it natively into a single global
-<code>.svydesign()</code> fundamentally crashes cluster targets
-natively. Always retain separate round lists securely.</li>
-<li><strong>Forgetting the clustering attributes natively:</strong>
-Ignoring the structural requirement utilizing standard
-<code>survey::svydesign()</code> directly without capturing the
-<code>nest = TRUE</code> flag fundamentally masks variance clusters
-inflating assumed structural confidences artificially.</li>
+<li><strong>Subsetting Data Naively</strong>: Never subset your
+dataframe with standard <code>[ ]</code> or <code>dplyr::filter()</code>
+before creating the survey design, as this breaks the cluster/strata
+structure and results in incorrect standard errors. Instead, define the
+design on the full dataset first, and then use <code>subset()</code>
+from the <code>survey</code> package or <code>srvyr::filter()</code> on
+the design object.</li>
+<li><strong>Ignoring Strata or PSU</strong>: Using only survey weights
+(e.g. <code>weighted.mean()</code>) without specifying clustering (PSUs)
+and stratification will yield correct point estimates but incorrect
+(usually too small) standard errors. Always use a full survey design
+object for inference.</li>
 </ul>
 </div>
 

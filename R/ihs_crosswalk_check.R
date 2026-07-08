@@ -44,16 +44,27 @@ ihs_crosswalk_check <- function(verbose = TRUE) {
       cli::cli_h2("Variables Needing Review")
       cli::cli_alert_warning("{needs_review_cnt} variable{?s} flagged for review:")
       review_vars <- cw[cw$needs_review, ]
-      
+
       # Use message instead of print for CRAN compliance
       msg_out <- paste(utils::capture.output(print(utils::head(review_vars[, c("harmonised_name", "label", "topic")], 5))), collapse = "\n")
       message(msg_out)
-      
+
       if (needs_review_cnt > 5) cli::cli_text("... and {needs_review_cnt - 5} more.")
-      
+
       cli::cli_alert_info("Review {.file data-raw/ihs_crosswalk_working.csv} to resolve flags.")
     } else {
       cli::cli_alert_success("No variables flagged for review! Crosswalk is clean.")
+    }
+
+    # Mapping confidence summary
+    if ("mapped" %in% names(cw)) {
+      mapped_cnt <- sum(cw$mapped, na.rm = TRUE)
+      tentative_cnt <- sum(!cw$mapped, na.rm = TRUE)
+      cli::cli_h2("Mapping Confidence")
+      cli::cli_alert_success("Confidently mapped: {.val {mapped_cnt}}")
+      if (tentative_cnt > 0) {
+        cli::cli_alert_warning("Tentative mappings: {.val {tentative_cnt}}")
+      }
     }
   }
   

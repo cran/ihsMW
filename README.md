@@ -6,60 +6,88 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
-The `ihsMW` package provides a robust, offline suite of tools to clean, aggregate, and harmonise data from the Malawi Integrated Household Survey (IHS). It is designed by and for development economists and data scientists, replacing hundreds of lines of brittle, project-specific data wrangling scripts with a single, citable, and defensible pipeline.
+The `ihsMW` package provides a robust, offline suite of tools to clean, aggregate, and harmonise data from the Malawi Integrated Household Survey (IHS) series. It is designed for development economists and data scientists, replacing hundreds of lines of brittle, project-specific data wrangling scripts with a single, citable, and defensible pipeline.
 
-*Note: Due to World Bank data access restrictions, this package no longer downloads raw microdata via the NADA API. You must manually download the required `.dta` or `.csv` files from the [World Bank Microdata Library](https://microdata.worldbank.org).*
+*Note: Due to World Bank data access restrictions, raw microdata files cannot be distributed inside R packages. You must manually download the required `.dta` or `.csv` files from the [World Bank Microdata Library](https://microdata.worldbank.org).*
 
 ## Installation
 
 ```r
-# CRAN (coming soon)
+# Install from CRAN
 install.packages("ihsMW")
 
-# Development version
-devtools::install_github("vituk123/ihsMW")
+# Or install the development version from GitHub
+# install.packages("pak")
+pak::pak("vituk123/ihsMW")
 ```
 
 ## Quick start
+
+Here is a complete end-to-end example showing how to load, harmonise, clean, deflate, design, and report on IHS data:
 
 ```r
 library(ihsMW)
 library(haven)
 
-# 1. Load your manually downloaded data
-raw_data <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
+# 1. Load raw data files (downloaded manually from World Bank)
+raw_demog <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
+raw_agri  <- read_dta("path/to/IHS5/ag_mod_i.dta")
 
 # 2. Harmonise column names automatically to the cross-round standard
-harmonised_df <- ihs_harmonise(raw_data, round = "IHS5")
+demog_harm <- ihs_harmonise(raw_demog, round = "IHS5")
+agri_harm  <- ihs_harmonise(raw_agri, round = "IHS5")
 
-# 3. Clean, standardize missing codes, and winsorize extreme outliers
+# 3. Merge modules (automatically detects join keys)
+merged_df <- ihs_merge(demog_harm, agri_harm)
+
+# 4. Clean, standardize missing codes, and winsorize extreme outliers
 clean_df <- ihs_clean(
-  harmonised_df, 
-  winsorize_vars = "consumption", 
-  winsorize_by = "region", 
-  probs = c(0.01, 0.99)
+  data = merged_df,
+  missing_cols = "food_exp",
+  winsorize_cols = "food_exp",
+  strata_col = "urban"
 )
 
-# 4. View the audit trail to see exactly what was modified
-print(attr(clean_df, "ihs_audit"))
+# 5. Deflate nominal values to 2019 real prices
+real_df <- ihs_deflate(clean_df, value_cols = "food_exp")
+
+# 6. Create survey design object (automatically detects weights, strata, PSU)
+design <- ihs_svydesign(real_df)
+
+# 7. Generate a publication-ready summary statistics table
+report_tbl <- ihs_report(
+  data = real_df,
+  vars = c("hhsize", "food_exp_real"),
+  by = "region",
+  weights = "hh_wgt"
+)
+print(report_tbl)
 ```
 
-## Key features
+## Function Overview
 
-### 1. Cross-Round Harmonisation
-Traditional multi-round analyses require tedious, manual variable mapping. `ihsMW` includes a built-in, curated crosswalk. Pass any raw IHS dataframe into `ihs_harmonise(data, round = "IHS5")`, and the package instantly renames columns to their standard, longitudinal identifiers (e.g., automatically mapping `hh_a02` to `region` or tracking complex changes like `af_bio_12` to `af_bio_12_x` across rounds).
+| Function | Category | Description |
+|---|---|---|
+| `ihs_harmonise()` | Harmonisation | Rename raw .dta columns to harmonised names using the crosswalk. |
+| `ihs_search()` | Discovery | Search variable names and labels across rounds. |
+| `ihs_crosswalk_check()` | Quality Check | Assess cross-round variable comparability and review flags. |
+| `ihs_panel_ids()` | Helper | Get standard household/individual ID columns for any IHS round. |
+| `ihs_merge()` | Merging | Merge multiple harmonised dataframes with auto-detected keys. |
+| `ihs_deflate()` | Deflation | CPI-based deflation to 2019 prices for real cross-round comparison. |
+| `ihs_svydesign()` | Analysis | Set up a survey design object with auto-detected weights/strata/PSU. |
+| `ihs_report()` | Analysis | Generate publication-ready weighted summary statistics tables. |
+| `ihs_clean()` | Cleaning | Master cleaning wrapper (missing values & winsorization). |
+| `ihs_standardize_missing()`| Cleaning | Convert survey missing codes (-99, -98, etc.) to NA. |
+| `ihs_winsorize()` | Cleaning | Stratified winsorization with `_w` suffix columns. |
+| `ihs_convert_units()` | Agriculture | Crop-specific unit-to-kg conversion using NSO factors. |
+| `ihs_aggregate()` | Aggregation | Type-aware aggregation to the household level. |
 
-### 2. Defensible Data Cleaning
-`ihs_clean()` serves as a master wrapper for standard survey wrangling:
-- **Missing Value Standardization**: Converts standard survey missing codes (e.g., `-99`, `999`) to R `NA` values automatically.
-- **Stratified Winsorization**: Caps extreme outliers non-destructively. Use `ihs_winsorize()` directly to apply stratified thresholds (e.g., trimming the 99th percentile of consumption separately for urban vs. rural areas to prevent over-trimming poor regions). Original columns are kept, and winsorized columns are appended with a `_w` suffix.
-- **Audit Trails**: Every operation is logged and attached as an attribute to your dataframe (`attr(df, "ihs_audit")`), making your cleaning steps highly transparent for academic replication.
+## Documentation & Vignettes
 
-### 3. Crop-Specific Unit Conversions
-Agricultural productivity analysis is notoriously difficult due to local units (e.g., pails, heaps, oxcarts). `ihs_convert_units()` leverages official NSO crop-specific conversion factors to calculate standard kilograms. A "pail" of groundnuts weighs differently than a "pail" of maize—this function handles the math and warns you if unmapped unit codes exist in your dataset.
-
-### 4. Smart Aggregation
-Rolling individual-level data up to the household level is simplified with `ihs_aggregate()`. It automatically detects column types: summing continuous quantities, applying logical `OR` for dummy variables, and warning on ambiguous text columns.
+To learn more about the package features, please consult the vignettes:
+- [Getting started with ihsMW](vignettes/getting-started.Rmd)
+- [Cross-round harmonisation](vignettes/harmonisation.Rmd)
+- [Working with survey weights](vignettes/survey-weights.Rmd)
 
 ## Citation
 
@@ -70,7 +98,7 @@ To cite `ihsMW` in publications, please use:
   title = {ihsMW: Clean and Harmonise Malawi Integrated Household Survey Data},
   author = {Vitumbiko Kayuni},
   year = {2026},
-  note = {R package version 0.2.0.9000},
+  note = {R package version 0.3.0},
   url = {https://github.com/vituk123/ihsMW},
 }
 ```

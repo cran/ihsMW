@@ -5,59 +5,72 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Install from GitHub
+# install.packages("ihsMW")
+
+## ----eval=FALSE---------------------------------------------------------------
+# # Install using pak
 # pak::pak("vituk123/ihsMW")
-# # or
+# 
+# # Or using remotes
 # remotes::install_github("vituk123/ihsMW")
 
 ## ----eval=FALSE---------------------------------------------------------------
 # library(ihsMW)
+# library(haven)
 # 
-# # Open the interactive authentication wizard
-# ihs_auth()
+# # Load the raw Stata file
+# raw_data <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
+# 
+# # Harmonise variables to standard names
+# harmonised_data <- ihs_harmonise(raw_data, round = "IHS5")
 
 ## ----eval=FALSE---------------------------------------------------------------
-# ihs_auth("your_alphanumeric_api_key_goes_here")
-
-## ----eval=FALSE---------------------------------------------------------------
-# # Look up variables related to consumption
+# # Search for consumption-related variables
 # ihs_search("consumption")
-
-## ----eval=FALSE---------------------------------------------------------------
-# # Find age-related variables specifically monitored during IHS5
+# 
+# # Search for age within a specific round
 # ihs_search("age", round = "IHS5")
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Look at all modules administered in IHS5
-# ihs_modules("IHS5")
+# ihs_crosswalk_check()
 
 ## ----eval=FALSE---------------------------------------------------------------
-# ihs_label("rexp_cat01")
+# # Convert standard survey missing codes (-99, -98, etc.) to NA
+# df_clean <- ihs_standardize_missing(harmonised_data)
+# 
+# # Winsorize outliers (e.g. food expenditure) stratified by urban/rural
+# df_winsor <- ihs_winsorize(df_clean, value_col = "food_exp", strata_col = "urban")
+# 
+# # Run the master cleaning wrapper which applies both steps and logs changes
+# df_cleaned <- ihs_clean(
+#   data = harmonised_data,
+#   missing_cols = c("food_exp", "nonfood_exp"),
+#   winsorize_cols = "food_exp",
+#   strata_col = "urban"
+# )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Simple extraction targeted against IHS5
-# df_simple <- IHS("rexp_cat01", round = "IHS5")
+# # Convert quantities reported in non-standard units to kilograms
+# crop_data <- data.frame(
+#   crop_code = c(1, 2),
+#   unit_code = c(3, 4),
+#   quantity = c(10, 5),
+#   region = c(1, 2)
+# )
+# 
+# crop_data_kg <- ihs_convert_units(
+#   data = crop_data,
+#   crop_col = "crop_code",
+#   unit_col = "unit_code",
+#   qty_col = "quantity",
+#   region_col = "region"
+# )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Multi-round pooled extractions mapping harmonisations intelligently
-# df_multi <- IHS(c("rexp_cat01", "hh_a02"), round = c("IHS4", "IHS5"))
-
-## ----eval=FALSE---------------------------------------------------------------
-# library(ihsMW)
-# library(dplyr)
-# library(ggplot2)
-# 
-# # Find the consumption variable
-# ihs_search("per capita consumption")
-# 
-# # Download IHS5 consumption data
-# df <- IHS("rexp_cat01", round = "IHS5")
-# 
-# # Quick summary
-# df |> summarise(mean_cons = mean(rexp_cat01, na.rm = TRUE))
-# 
-# # Simple histogram
-# ggplot(df, aes(x = rexp_cat01)) +
-#   geom_histogram(bins = 50) +
-#   labs(title = "Distribution of per capita consumption, Malawi IHS5")
+# # Aggregate individual-level education to household level
+# hh_edu <- ihs_aggregate(
+#   data = member_data,
+#   id_cols = "case_id",
+#   val_cols = c("years_education", "completed_primary")
+# )
 

@@ -6,37 +6,65 @@ knitr::opts_chunk$set(
 
 ## ----eval=FALSE---------------------------------------------------------------
 # library(ihsMW)
+# library(haven)
 # 
-# # Automatically intercept consumption variables and inject structural weighting
-# svy <- IHS_survey("rexp_cat01", round = "IHS5")
+# # Load and harmonise IHS5 data
+# raw_data <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
+# harmonised_data <- ihs_harmonise(raw_data, round = "IHS5")
 # 
-# # The output natively masks as a tbl_svy allowing tidy-eval manipulation
-# class(svy)
-# #> [1] "tbl_svy"     "svydesign2"  "svydesign"
+# # Create survey design object
+# # Automatically detects: hh_wgt/hhweight, stratum/strata, and ea_id/psu
+# design <- ihs_svydesign(harmonised_data)
+
+## ----eval=FALSE---------------------------------------------------------------
+# design <- ihs_svydesign(
+#   data = harmonised_data,
+#   weight_col = "custom_weight",
+#   strata_col = "custom_strata",
+#   psu_col = "custom_ea"
+# )
 
 ## ----eval=FALSE---------------------------------------------------------------
 # library(survey)
 # 
-# # Compute the statistically accurate, nationally representative average
-# svymean(~rexp_cat01, design = svy, na.rm = TRUE)
+# # Nationally representative mean of household size
+# svymean(~hhsize, design = design, na.rm = TRUE)
 # 
-# # Segment the nationally representative consumption by explicit strata
-# svyby(~rexp_cat01, ~stratum, svy, svymean, na.rm = TRUE)
+# # Nationally representative total of expenditure
+# svytotal(~food_exp, design = design, na.rm = TRUE)
+# 
+# # Calculate means grouped by a factor variable (e.g., region)
+# svyby(~food_exp, ~region, design = design, svymean, na.rm = TRUE)
 
 ## ----eval=FALSE---------------------------------------------------------------
 # library(srvyr)
 # 
-# # Tidy-style summaries mapping the underlying survey dimensions natively
-# svy |>
-#   group_by(stratum) |>
-#   summarise(mean_cons = survey_mean(rexp_cat01, na.rm = TRUE))
+# # Convert to srvyr design object
+# srvyr_design <- as_survey(design)
+# 
+# # Calculate summary statistics using dplyr verbs
+# summary_stats <- srvyr_design |>
+#   group_by(region) |>
+#   summarise(
+#     mean_exp = survey_mean(food_exp, na.rm = TRUE),
+#     total_exp = survey_total(food_exp, na.rm = TRUE)
+#   )
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Requesting pooled objects targets isolated arrays preserving isolated bounds
-# svy_list <- IHS_survey("rexp_cat01", round = c("IHS4", "IHS5"))
-# 
-# # Apply functional iteration computing the unique representation safely
-# lapply(svy_list, function(s) {
-#   survey::svymean(~rexp_cat01, design = s, na.rm = TRUE)
-# })
+# # Generate a summary statistics table with survey weights
+# report_tbl <- ihs_report(
+#   data = harmonised_data,
+#   vars = c("hhsize", "food_exp", "nonfood_exp"),
+#   weights = "hh_wgt"
+# )
+# print(report_tbl)
+
+## ----eval=FALSE---------------------------------------------------------------
+# # Grouped weighted summary statistics
+# report_grouped <- ihs_report(
+#   data = harmonised_data,
+#   vars = c("hhsize", "food_exp"),
+#   by = "region",
+#   weights = "hh_wgt"
+# )
 

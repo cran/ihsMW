@@ -341,127 +341,123 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The <code>ihsMW</code> package provides programmatic access to the
-Malawi Integrated Household Survey (IHS) microdata hosted natively by
-the World Bank Microdata Library. By using <code>ihsMW</code>, you can
-reliably discover, harmonise, and download complex survey metrics
-directly into R, significantly accelerating academic analyses.</p>
+<p>The <code>ihsMW</code> package is a dedicated toolkit designed to
+clean, harmonise, and aggregate household survey data from the Malawi
+Integrated Household Survey (IHS) series. It is built to support
+researchers and analysts working with the IHS2 (2004/05), IHS3
+(2010/11), IHS4 (2016/17), and IHS5 (2019/20) datasets.</p>
 <div id="installation" class="section level2">
 <h2>1. Installation</h2>
-<p>You can install the development version of <code>ihsMW</code> from
-GitHub using the <code>pak</code> or <code>remotes</code> package:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co"># or</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span></code></pre></div>
-<p><em>(Note: CRAN installation commands will be available once the
-package is officially published).</em></p>
+<p>You can install the stable release of <code>ihsMW</code> from
+CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ihsMW&quot;</span>)</span></code></pre></div>
+<p>Or install the development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Install using pak</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Or using remotes</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span></code></pre></div>
 </div>
-<div id="one-time-setup" class="section level2">
-<h2>2. One-time setup</h2>
-<p>The World Bank Microdata Library limits access to registered
-researchers. You must retrieve a free API Key to access survey records
-securely.</p>
-<p>Run the authentication wizard directly from R. It will dynamically
-guide you toward generating an API key securely:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># Open the interactive authentication wizard</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">ihs_auth</span>()</span></code></pre></div>
-<p>This command will open the World Bank Microdata Library in your
-browser. Register, navigate to your profile, generate a token, and copy
-the string.</p>
-<p>Then, register your key within the package seamlessly:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">ihs_auth</span>(<span class="st">&quot;your_alphanumeric_api_key_goes_here&quot;</span>)</span></code></pre></div>
-<p>This procedure only needs to be completed once mapping your
-credentials persistently to your <code>~/.Renviron</code> profile
-securely on your local device.</p>
+<div id="the-ihs-landscape" class="section level2">
+<h2>2. The IHS Landscape</h2>
+<p>The Malawi National Statistical Office (NSO) conducts the Integrated
+Household Survey (IHS) periodically to track poverty, household
+expenditure, agriculture, and other socio-economic indicators. The
+primary rounds include:</p>
+<ul>
+<li><strong>IHS2</strong>: 2004–2005</li>
+<li><strong>IHS3</strong>: 2010–2011</li>
+<li><strong>IHS4</strong>: 2016–2017</li>
+<li><strong>IHS5</strong>: 2019–2020</li>
+</ul>
+<p>Due to licensing restrictions, the raw microdata cannot be
+redistributed directly within R packages. Researchers must first
+register and manually download the survey data in Stata
+(<code>.dta</code>) format from the <a href="https://microdata.worldbank.org/">World Bank Microdata
+Library</a>.</p>
+<p>Once downloaded, place the files in a structured folder hierarchy on
+your local machine.</p>
 </div>
-<div id="finding-variables" class="section level2">
-<h2>3. Finding variables</h2>
-<p>The <code>ihsMW</code> package maintains an internal harmonisation
-crosswalk mapping thousands of distinct metrics accurately tracking
-naming disparities across distinct rounds (IHS2 to IHS5).</p>
-<p>You can explicitly search this map utilizing descriptive
-keywords:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Look up variables related to consumption</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;consumption&quot;</span>)</span></code></pre></div>
-<p>Alternatively, restrict your query natively capturing data
-specifically from an explicit survey round implicitly avoiding
-unnecessary scope overlaps:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Find age-related variables specifically monitored during IHS5</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;age&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
-<p>Should you wish to review variables explicitly inside their raw
-survey contexts, explore modules seamlessly natively leveraging the
-World Bank infrastructure:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Look at all modules administered in IHS5</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">ihs_modules</span>(<span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
-<p>Use <code>ihs_label()</code> natively referencing Stata attributes
-preserving explicit meaning behind discrete identifiers exactly
-mirroring internal documentation structures natively:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ihs_label</span>(<span class="st">&quot;rexp_cat01&quot;</span>)</span></code></pre></div>
+<div id="loading-and-harmonising" class="section level2">
+<h2>3. Loading and Harmonising</h2>
+<p>Each round of the IHS uses different variable names for the same
+question. For example, household size is recorded under different column
+names depending on the round. <code>ihsMW</code> uses a comprehensive
+crosswalk to harmonise these variable names.</p>
+<p>To load and harmonise a raw survey file:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Load the raw Stata file</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>raw_data <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Harmonise variables to standard names</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>harmonised_data <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(raw_data, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
 </div>
-<div id="downloading-data" class="section level2">
-<h2>4. Downloading data</h2>
-<p>Once your targeted harmonised variables are identified, use the
-overarching <code>IHS()</code> extractor capturing raw microdata
-formatting seamlessly binding values natively resolving dependencies
-securely across cache targets without rigid management requirements.</p>
-<p>Acquire standalone elements cleanly extracting structural
-representations iteratively locally:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Simple extraction targeted against IHS5</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>df_simple <span class="ot">&lt;-</span> <span class="fu">IHS</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
-<p>The true power of <code>ihsMW</code> extends gracefully targeting
-multiple variables pooled simultaneously across disjointed rounds
-without manual file joining restrictions matching parameters reliably
-natively:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Multi-round pooled extractions mapping harmonisations intelligently</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>df_multi <span class="ot">&lt;-</span> <span class="fu">IHS</span>(<span class="fu">c</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="st">&quot;hh_a02&quot;</span>), <span class="at">round =</span> <span class="fu">c</span>(<span class="st">&quot;IHS4&quot;</span>, <span class="st">&quot;IHS5&quot;</span>))</span></code></pre></div>
-<p>The pooled structure integrates an explicit <code>ihs_round</code>
-character string isolating origins intelligently supporting explicit
-group derivations cleanly binding <code>data.frame</code> layers exactly
-natively accurately.</p>
-<p><strong>Caching Integration</strong>: <code>ihsMW</code> downloads
-raw components saving parameters directly onto persistent native disk
-locations ensuring data remains cached persistently seamlessly avoiding
-redundant API hits natively!</p>
+<div id="searching-variables" class="section level2">
+<h2>4. Searching Variables</h2>
+<p>To find variables mapped in the crosswalk, use
+<code>ihs_search()</code>. You can search by keywords or labels:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Search for consumption-related variables</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;consumption&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Search for age within a specific round</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;age&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
+<p>To view a summary of the crosswalk coverage and flag variables
+needing review, use <code>ihs_crosswalk_check()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>()</span></code></pre></div>
 </div>
-<div id="a-complete-worked-example" class="section level2">
-<h2>5. A complete worked example</h2>
-<p>The following blocks detail a standard end-to-end integration mapping
-discovery against consumption distributions smoothly integrating
-visualization bindings securely directly formatting outputs
-correctly.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co"># Find the consumption variable</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="fu">ihs_search</span>(<span class="st">&quot;per capita consumption&quot;</span>)</span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co"># Download IHS5 consumption data</span></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">IHS</span>(<span class="st">&quot;rexp_cat01&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co"># Quick summary</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>df <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">mean_cons =</span> <span class="fu">mean</span>(rexp_cat01, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co"># Simple histogram</span></span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> rexp_cat01)) <span class="sc">+</span></span>
-<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins =</span> <span class="dv">50</span>) <span class="sc">+</span></span>
-<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Distribution of per capita consumption, Malawi IHS5&quot;</span>)</span></code></pre></div>
+<div id="data-cleaning" class="section level2">
+<h2>5. Data Cleaning</h2>
+<p><code>ihsMW</code> provides tools to clean standard survey anomalies,
+handle missing value codes, and winsorize extreme values:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Convert standard survey missing codes (-99, -98, etc.) to NA</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df_clean <span class="ot">&lt;-</span> <span class="fu">ihs_standardize_missing</span>(harmonised_data)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Winsorize outliers (e.g. food expenditure) stratified by urban/rural</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>df_winsor <span class="ot">&lt;-</span> <span class="fu">ihs_winsorize</span>(df_clean, <span class="at">value_col =</span> <span class="st">&quot;food_exp&quot;</span>, <span class="at">strata_col =</span> <span class="st">&quot;urban&quot;</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Run the master cleaning wrapper which applies both steps and logs changes</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>df_cleaned <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">missing_cols =</span> <span class="fu">c</span>(<span class="st">&quot;food_exp&quot;</span>, <span class="st">&quot;nonfood_exp&quot;</span>),</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">winsorize_cols =</span> <span class="st">&quot;food_exp&quot;</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">strata_col =</span> <span class="st">&quot;urban&quot;</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="citation" class="section level2">
-<h2>6. Citation</h2>
-<p>When publishing research utilizing datasets harmonized or accessed
-via <code>ihsMW</code>, you must rigorously cite the sampling procedures
-matching precise documents natively guaranteeing attribution accurately
-tracking standard rules.</p>
-<p>Always cite both the NSO Malawi and the World Bank LSMS natively
-recognizing precise structures smoothly linking contributions
-reliably!</p>
-<p>For IHS5: National Statistical Office. <strong>Malawi - Fifth
-Integrated Household Survey 2019-2020.</strong> Ref:
-MWI_2019_IHS-V_v06_M. URL: <a href="https://microdata.worldbank.org/index.php/catalog/3818" class="uri">https://microdata.worldbank.org/index.php/catalog/3818</a></p>
+<div id="unit-conversion" class="section level2">
+<h2>6. Unit Conversion</h2>
+<p>Agricultural modules in the IHS allow households to report harvest
+quantities in non-standard units (e.g., pails, basins, ox-carts, bags)
+rather than standard kilograms. <code>ihsMW</code> bundles official NSO
+conversion factors to convert these quantities to standard
+kilograms:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Convert quantities reported in non-standard units to kilograms</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>crop_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">crop_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">unit_code =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>),</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">region =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>)</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>crop_data_kg <span class="ot">&lt;-</span> <span class="fu">ihs_convert_units</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="at">data =</span> crop_data,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="at">crop_col =</span> <span class="st">&quot;crop_code&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="at">unit_col =</span> <span class="st">&quot;unit_code&quot;</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="at">qty_col =</span> <span class="st">&quot;quantity&quot;</span>,</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">region_col =</span> <span class="st">&quot;region&quot;</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="aggregation" class="section level2">
+<h2>7. Aggregation</h2>
+<p>To aggregate member-level or agricultural plot-level data up to the
+household level, use <code>ihs_aggregate()</code>:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Aggregate individual-level education to household level</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>hh_edu <span class="ot">&lt;-</span> <span class="fu">ihs_aggregate</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">data =</span> member_data,</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">id_cols =</span> <span class="st">&quot;case_id&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">val_cols =</span> <span class="fu">c</span>(<span class="st">&quot;years_education&quot;</span>, <span class="st">&quot;completed_primary&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 
 

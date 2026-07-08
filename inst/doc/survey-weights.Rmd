@@ -1,8 +1,8 @@
 ---
-title: "Using survey weights with ihsMW"
+title: "Working with survey weights"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using survey weights with ihsMW}
+  %\VignetteIndexEntry{Working with survey weights}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,93 +14,108 @@ knitr::opts_chunk$set(
 )
 ```
 
-For researchers targeting population-representative estimates, accounting for the complex survey design of the Malawi Integrated Household Survey (IHS) is non-negotiable. The `ihsMW` package abstracts the tedious configuration of these designs, integrating directly with existing R infrastructure to provide statistically sound representations natively.
+The Malawi Integrated Household Survey (IHS) series uses complex sampling designs rather than Simple Random Sampling (SRS). To obtain unbiased, population-representative estimates, survey weights, stratification, and clustering must be accounted for. This vignette describes how to set up and use survey designs with `ihsMW`.
 
-## 1. Why weights matter
+## 1. Why Survey Weights Matter
 
-The IHS utilizes a **stratified two-stage cluster sample** design explicitly mapped to represent the national population, rural/urban disparities, and specific geographical districts simultaneously.
+To reduce fieldwork costs and improve accuracy, the Malawi National Statistical Office (NSO) designs the IHS using a **stratified two-stage cluster sample**.
+- **Strata**: Usually defined by districts split into urban and rural areas.
+- **Primary Sampling Units (PSUs)**: The Enumeration Areas (EAs) selected in the first stage.
+- **Survey Weights**: Inverted probabilities of selection, adjusted for non-response.
 
-Unweighted means are **NOT** nationally representative. Computing a simple average across an unweighted `data.frame` yields biased estimates skewed by disproportionate sampling allocations inherent to rural versus urban tracks. 
+Because different households have different probabilities of selection (e.g. rural households might be over- or under-sampled relative to urban ones), unweighted statistics will be biased. Standard errors computed without accounting for clustering and stratification will also be incorrectly narrow.
 
-> "Overall, the IHS5 sample design is a stratified two-stage sample... Therefore, it is imperative that the survey weights be used when making national-level or regional-level estimates."
-> — *National Statistical Office (2020), IHS5 Basic Information Document, Sampling Section.*
+## 2. Setting Up the Design
 
-## 2. The IHS_survey() function
-
-To bridge the gap between raw data downloads and proper statistical weights seamlessly, `ihsMW` provides the `IHS_survey()` function. This wrapper extracts the intended indicators alongside their underlying survey dimensions dynamically.
+The `ihs_svydesign()` function creates a survey design object by wrapping `survey::svydesign()`. It automatically detects standard weight, strata, and PSU columns inside your harmonised dataset:
 
 ```{r eval=FALSE}
 library(ihsMW)
+library(haven)
 
-# Automatically intercept consumption variables and inject structural weighting
-svy <- IHS_survey("rexp_cat01", round = "IHS5")
+# Load and harmonise IHS5 data
+raw_data <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
+harmonised_data <- ihs_harmonise(raw_data, round = "IHS5")
 
-# The output natively masks as a tbl_svy allowing tidy-eval manipulation
-class(svy)
-#> [1] "tbl_svy"     "svydesign2"  "svydesign"
+# Create survey design object
+# Automatically detects: hh_wgt/hhweight, stratum/strata, and ea_id/psu
+design <- ihs_svydesign(harmonised_data)
 ```
 
-## 3. Computing weighted estimates
+If the standard columns are named differently in your data, you can specify them explicitly:
 
-Once instantiated, the survey object behaves exactly as a standard complex environment gracefully tracking variances internally.
+```{r eval=FALSE}
+design <- ihs_svydesign(
+  data = harmonised_data,
+  weight_col = "custom_weight",
+  strata_col = "custom_strata",
+  psu_col = "custom_ea"
+)
+```
 
-If you prefer classic structural base approximations using the `survey` package:
+## 3. Weighted Analysis
+
+Once you have the survey design object, you can compute representative statistics using the `survey` package:
 
 ```{r eval=FALSE}
 library(survey)
 
-# Compute the statistically accurate, nationally representative average
-svymean(~rexp_cat01, design = svy, na.rm = TRUE)
+# Nationally representative mean of household size
+svymean(~hhsize, design = design, na.rm = TRUE)
 
-# Segment the nationally representative consumption by explicit strata
-svyby(~rexp_cat01, ~stratum, svy, svymean, na.rm = TRUE)
+# Nationally representative total of expenditure
+svytotal(~food_exp, design = design, na.rm = TRUE)
+
+# Calculate means grouped by a factor variable (e.g., region)
+svyby(~food_exp, ~region, design = design, svymean, na.rm = TRUE)
 ```
 
-Alternatively, leverage the `srvyr` package bridging `dplyr` pipelines into weighted topologies intuitively:
+## 4. Using srvyr
+
+If you prefer `dplyr`-like syntax, the `srvyr` package works seamlessly with the survey design objects generated by `ihs_svydesign()`:
 
 ```{r eval=FALSE}
 library(srvyr)
 
-# Tidy-style summaries mapping the underlying survey dimensions natively
-svy |>
-  group_by(stratum) |>
-  summarise(mean_cons = survey_mean(rexp_cat01, na.rm = TRUE))
+# Convert to srvyr design object
+srvyr_design <- as_survey(design)
+
+# Calculate summary statistics using dplyr verbs
+summary_stats <- srvyr_design |>
+  group_by(region) |>
+  summarise(
+    mean_exp = survey_mean(food_exp, na.rm = TRUE),
+    total_exp = survey_total(food_exp, na.rm = TRUE)
+  )
 ```
 
-## 4. Multi-round weighted analysis
+## 5. Summary Statistics
 
-Because population sizes, spatial mapping coordinates, and primary sampling units fundamentally shift globally between cross-sectional spans, survey objects targeting discrete rounds **should NOT be intelligently pooled naively** under a unified statistical architecture without intensive independent reweighting operations.
-
-Instead, when querying multiple rounds natively, `IHS_survey()` protects inferences iteratively yielding a distinct instantiated named list structure explicitly encapsulating the unique configurations cleanly.
+`ihsMW` provides `ihs_report()`, which computes a clean summary statistics table for publication. It supports survey weights directly:
 
 ```{r eval=FALSE}
-# Requesting pooled objects targets isolated arrays preserving isolated bounds
-svy_list <- IHS_survey("rexp_cat01", round = c("IHS4", "IHS5"))
-
-# Apply functional iteration computing the unique representation safely
-lapply(svy_list, function(s) {
-  survey::svymean(~rexp_cat01, design = s, na.rm = TRUE)
-})
+# Generate a summary statistics table with survey weights
+report_tbl <- ihs_report(
+  data = harmonised_data,
+  vars = c("hhsize", "food_exp", "nonfood_exp"),
+  weights = "hh_wgt"
+)
+print(report_tbl)
 ```
 
-## 5. Weight variables per round
+You can also compute these weighted tables grouped by another variable:
 
-`ihsMW` relies on a hard-coded internal mapping dictating the string topologies targeted during object instantiation dynamically. 
+```{r eval=FALSE}
+# Grouped weighted summary statistics
+report_grouped <- ihs_report(
+  data = harmonised_data,
+  vars = c("hhsize", "food_exp"),
+  by = "region",
+  weights = "hh_wgt"
+)
+```
 
-| Round | `weight_var` | `strata_var` | `cluster_var` |
-|-------|--------------|--------------|---------------|
-| IHS1  | `wght`       | `stratum`    | `ea_id`       |
-| IHS2  | `hh_wgt`     | `stratum`    | `ea_code`     |
-| IHS3  | `hh_wgt`     | `stratum`    | `ea_id`       |
-| IHS4  | `hh_wgt`     | `stratum`    | `ea_id`       |
-| IHS5  | `hhweight`   | `stratum`    | `ea_id`       |
+## 6. Common Pitfalls
 
-**Crucial Warning:** These mappings are assumed static but should always be independently verified by the researcher. You must actively cross-reference these fields against the explicit [World Bank Microdata Library BIDs](https://microdata.worldbank.org/index.php/catalog) natively avoiding invalid proxy mappings implicitly.
-
-## 6. Common mistakes
-
-Researchers approaching the package frequently implement standard code workflows resulting in structurally invalid endpoints natively:
-
-* **Using raw `IHS()` outcomes:** Extracting variables exclusively natively bypassing survey targets avoids structural weights natively skewing estimates entirely inappropriately. Always utilize `IHS_survey()` if inference depends on it.
-* **Naive pooling across bounds:** Extracting `IHS(round = "all")` into a static `.dta` equivalent and independently wrapping it natively into a single global `.svydesign()` fundamentally crashes cluster targets natively. Always retain separate round lists securely.
-* **Forgetting the clustering attributes natively:** Ignoring the structural requirement utilizing standard `survey::svydesign()` directly without capturing the `nest = TRUE` flag fundamentally masks variance clusters inflating assumed structural confidences artificially.
+- **Subsetting Data Naively**: Never subset your dataframe with standard `[ ]` or `dplyr::filter()` before creating the survey design, as this breaks the cluster/strata structure and results in incorrect standard errors. Instead, define the design on the full dataset first, and then use `subset()` from the `survey` package or `srvyr::filter()` on the design object.
+- **Ignoring Strata or PSU**: Using only survey weights (e.g. `weighted.mean()`) without specifying clustering (PSUs) and stratification will yield correct point estimates but incorrect (usually too small) standard errors. Always use a full survey design object for inference.
