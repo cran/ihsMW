@@ -29,16 +29,33 @@ Produces a publication-ready summary statistics table for numeric variables
 in IHS data. Supports grouping by a factor variable and optional survey
 weights.
 }
-\examples{
-\dontrun{
-  # Basic summary
-  ihs_report(harmonised_data, vars = c("rexp_cat01", "hhsize"))
+\section{Weighted statistics}{
 
-  # Grouped by region
-  ihs_report(harmonised_data, vars = "rexp_cat01", by = "region")
-
-  # Weighted summary
-  ihs_report(harmonised_data, vars = "rexp_cat01", weights = "hh_wgt")
+When \code{weights} is supplied the mean and SD are weighted; \code{n},
+\code{median}, \code{min}, \code{max} and \code{pct_missing} stay
+unweighted, since they describe the sample rather than the population.
+For weighted quantiles or design-correct standard errors, build a design
+with \code{\link{ihs_svydesign}} and use the \pkg{survey} package.
 }
 
+\examples{
+hh <- data.frame(
+  hhsize   = c(4, 6, 3, 5, 7, 2),
+  food_exp = c(1200, 3400, 900, 2100, 4500, 700),
+  region   = c("North", "North", "Central", "Central", "South", "South"),
+  hh_wgt   = c(1.2, 0.8, 1.5, 1.1, 0.9, 1.3)
+)
+
+# Basic summary of every numeric column (weight columns are excluded)
+ihs_report(hh)
+
+# Selected variables, grouped by region
+ihs_report(hh, vars = "food_exp", by = "region")
+
+# Survey-weighted means and SDs
+ihs_report(hh, vars = c("hhsize", "food_exp"), weights = "hh_wgt")
+
+}
+\seealso{
+\code{\link{ihs_svydesign}} for design-based inference.
 }

@@ -31,6 +31,35 @@ test_that("ihs_merge supports inner and full join types", {
   expect_equal(nrow(full), 3)
 })
 
+test_that("ihs_merge does not warn about row growth on a full join", {
+  # A full join over partly disjoint keys legitimately returns more rows than
+  # either input; warning about it trained users to ignore a real signal.
+  df1 <- data.frame(case_id = c("A", "B"), x = 1:2)
+  df2 <- data.frame(case_id = c("C", "D"), y = 3:4)
+
+  expect_no_warning(ihs_merge(df1, df2, type = "full"))
+  expect_equal(nrow(ihs_merge(df1, df2, type = "full")), 4)
+})
+
+test_that("ihs_merge warns when shared non-key columns get suffixed", {
+  df1 <- data.frame(case_id = c("A", "B"), region = 1:2, x = 1:2)
+  df2 <- data.frame(case_id = c("A", "B"), region = 1:2, y = 3:4)
+
+  expect_warning(ihs_merge(df1, df2), "suffixed")
+
+  merged <- suppressWarnings(ihs_merge(df1, df2))
+  expect_true(all(c("region.x", "region.y") %in% names(merged)))
+
+  # Naming the shared column as a join key avoids the duplication entirely
+  expect_no_warning(ihs_merge(df1, df2, by = c("case_id", "region")))
+})
+
+test_that("ihs_merge still warns about many-to-many left joins", {
+  df1 <- data.frame(case_id = c("A", "A"), x = 1:2)
+  df2 <- data.frame(case_id = c("A", "A"), y = 3:4)
+  expect_warning(ihs_merge(df1, df2), "expanded rows")
+})
+
 test_that("ihs_merge errors on fewer than 2 data.frames", {
   df1 <- data.frame(case_id = "A", x = 1)
   expect_error(ihs_merge(df1), "at least 2")

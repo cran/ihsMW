@@ -7,18 +7,27 @@ test_that("check_round('IHS5') passes silently", {
 
 test_that("check_round('all') returns all supported rounds", {
   result <- check_round("all")
-  expect_equal(result, c("IHS2", "IHS3", "IHS4", "IHS5"))
+  expect_equal(result, c("IHS2", "IHS3", "IHS4", "IHS5", "IHS6"))
 })
 
 test_that("check_round(c('IHS4', 'IHS5')) passes silently", {
   expect_equal(check_round(c("IHS4", "IHS5")), c("IHS4", "IHS5"))
 })
 
-test_that("check_round('IHS6') throws ihsMW_bad_round", {
-  expect_error(check_round("IHS6"), class = "ihsMW_bad_round")
+test_that("check_round('IHS6') is supported", {
+  expect_equal(check_round("IHS6"), "IHS6")
+})
+
+test_that("check_round('IHS7') throws ihsMW_bad_round", {
+  expect_error(check_round("IHS7"), class = "ihsMW_bad_round")
 })
 
 test_that("check_round('IHS1') throws ihsMW_bad_round", {
   expect_error(check_round("IHS1"), class = "ihsMW_bad_round")
+})
+
+test_that("every supported round has a survey year mapping", {
+  expect_setequal(names(.IHS_ROUND_YEARS), .IHS_ROUNDS)
+  expect_true(all(is.finite(.IHS_ROUND_YEARS)))
 })
 

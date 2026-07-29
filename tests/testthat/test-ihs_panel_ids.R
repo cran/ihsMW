@@ -17,8 +17,20 @@ test_that("ihs_panel_ids returns comparison data.frame for 'all'", {
   df <- ihs_panel_ids("all")
   expect_s3_class(df, "data.frame")
   expect_true("role" %in% names(df))
-  expect_true(all(c("IHS2", "IHS3", "IHS4", "IHS5") %in% names(df)))
+  expect_true(all(c("IHS2", "IHS3", "IHS4", "IHS5", "IHS6") %in% names(df)))
   expect_equal(nrow(df), 5)
+})
+
+test_that("ihs_panel_ids covers every supported round", {
+  df <- ihs_panel_ids("all")
+  expect_true(all(.IHS_ROUNDS %in% names(df)))
+})
+
+test_that("ihs_panel_ids reflects the IHS6 stratum rename", {
+  # IHS6 renamed the design stratum column from `stratum` to `strata`.
+  expect_equal(ihs_panel_ids("IHS5")[["strata"]], "stratum")
+  expect_equal(ihs_panel_ids("IHS6")[["strata"]], "strata")
+  expect_equal(ihs_panel_ids("IHS6")[["weight"]], "hh_wgt")
 })
 
 test_that("ihs_panel_ids errors on invalid round", {

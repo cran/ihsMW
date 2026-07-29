@@ -14,24 +14,50 @@ values to deflate.}
 
 \item{round}{Character string of the IHS round (e.g., \code{"IHS5"}). If
 \code{NULL} (default), auto-detected from an \code{ihs_round} column in
-the data.}
+the data - which is what \code{\link{ihs_harmonise}} adds, so pooled
+multi-round data.frames deflate correctly without further arguments.}
 
 \item{base_year}{Numeric. The base year for deflation. Default is
-\code{2019} (IHS5 baseline).}
+\code{2019} (IHS5 baseline). Must be a year present in the CPI table.}
 }
 \value{
 A data.frame with new \code{*_real} suffixed columns containing
-  deflated values.
+  deflated values. Original nominal columns are left untouched.
 }
 \description{
 Converts nominal monetary values to real (constant-price) values using
-Malawi CPI data. By default uses 2019 (IHS5 baseline) as the reference
-period.
+Malawi CPI data. By default uses 2019 (the IHS5 fieldwork year) as the
+reference period, so figures from every round are expressed in 2019 kwacha
+and can be compared directly.
 }
-\examples{
-\dontrun{
-  # Deflate IHS4 consumption to 2019 prices
-  real_data <- ihs_deflate(df, value_cols = "rexp_cat01", round = "IHS4")
+\details{
+Each round is deflated using its survey midpoint year: IHS2 = 2004,
+IHS3 = 2010, IHS4 = 2016, IHS5 = 2019, IHS6 = 2024. The bundled CPI table
+(\code{inst/extdata/mw_cpi_annual.csv}) is the World Bank WDI series
+\code{FP.CPI.TOTL} for Malawi, rebased to 2019 = 100, covering 2004-2025.
+}
+\section{Caveat}{
+
+This is a national CPI deflator. It does not adjust for spatial price
+variation between districts or between urban and rural areas. If your
+analysis is sensitive to spatial price differences, use the spatial price
+index published with each round's consumption aggregate instead.
 }
 
+\examples{
+# A pooled data.frame carrying an `ihs_round` column deflates in one call
+pooled <- data.frame(
+  food_exp  = c(1000, 1000, 1000),
+  ihs_round = c("IHS4", "IHS5", "IHS6")
+)
+ihs_deflate(pooled, value_cols = "food_exp")
+
+# Or state the round explicitly for a single-round data.frame
+ihs_deflate(data.frame(food_exp = 1000), value_cols = "food_exp",
+            round = "IHS6")
+
+}
+\seealso{
+\code{\link{ihs_harmonise}}, which adds the \code{ihs_round}
+  column this function reads.
 }

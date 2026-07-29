@@ -7,7 +7,8 @@ if (getRversion() >= "2.15.1") {
   utils::globalVariables(c(
     "IHS_survey", "file_name", "file_id", "n_variables", "harmonised_name", "label",
     "module", "topic", "ihs2_name", "ihs3_name", "ihs4_name", "ihs5_name",
-    "n_rounds", "needs_review", "round_name", "mapped", "ihs_round",
+    "ihs6_name", "ihs6_expansion_of", "n_rounds", "needs_review", "round_name",
+    "mapped", "ihs_round",
     ".ihs_deflate_round"
   ))
 }

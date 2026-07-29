@@ -13,7 +13,8 @@ knitr::opts_chunk$set(
 # harmonised_data <- ihs_harmonise(raw_data, round = "IHS5")
 # 
 # # Create survey design object
-# # Automatically detects: hh_wgt/hhweight, stratum/strata, and ea_id/psu
+# # Automatically detects: hh_wgt/hhweight, stratum (IHS2-IHS5) or strata
+# # (IHS6), and ea_id/psu
 # design <- ihs_svydesign(harmonised_data)
 
 ## ----eval=FALSE---------------------------------------------------------------

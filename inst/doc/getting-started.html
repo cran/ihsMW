@@ -343,9 +343,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <p>The <code>ihsMW</code> package is a dedicated toolkit designed to
 clean, harmonise, and aggregate household survey data from the Malawi
-Integrated Household Survey (IHS) series. It is built to support
-researchers and analysts working with the IHS2 (2004/05), IHS3
-(2010/11), IHS4 (2016/17), and IHS5 (2019/20) datasets.</p>
+Integrated Household Survey (IHS) series. It supports IHS2 (2004/05),
+IHS3 (2010/11), IHS4 (2016/17), IHS5 (2019/20) and IHS6 (2024/25).</p>
+<blockquote>
+<p>For a complete standalone manual covering every function, worked
+end-to-end workflows, troubleshooting and FAQs, see the <a href="ihsMW-user-guide.html">ihsMW User Guide</a>, also available as a
+<a href="https://vituk123.github.io/ihsMW/ihsMW-user-guide.pdf">PDF</a>
+and as <a href="https://vituk123.github.io/ihsMW/ihsMW-user-guide.Rmd">R
+Markdown source</a>.</p>
+</blockquote>
 <div id="installation" class="section level2">
 <h2>1. Installation</h2>
 <p>You can install the stable release of <code>ihsMW</code> from
@@ -369,6 +375,7 @@ primary rounds include:</p>
 <li><strong>IHS3</strong>: 2010–2011</li>
 <li><strong>IHS4</strong>: 2016–2017</li>
 <li><strong>IHS5</strong>: 2019–2020</li>
+<li><strong>IHS6</strong>: 2024–2025</li>
 </ul>
 <p>Due to licensing restrictions, the raw microdata cannot be
 redistributed directly within R packages. Researchers must first
@@ -414,16 +421,19 @@ handle missing value codes, and winsorize extreme values:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Convert standard survey missing codes (-99, -98, etc.) to NA</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>df_clean <span class="ot">&lt;-</span> <span class="fu">ihs_standardize_missing</span>(harmonised_data)</span>
 <span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Winsorize outliers (e.g. food expenditure) stratified by urban/rural</span></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>df_winsor <span class="ot">&lt;-</span> <span class="fu">ihs_winsorize</span>(df_clean, <span class="at">value_col =</span> <span class="st">&quot;food_exp&quot;</span>, <span class="at">strata_col =</span> <span class="st">&quot;urban&quot;</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co"># Run the master cleaning wrapper which applies both steps and logs changes</span></span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>df_cleaned <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">missing_cols =</span> <span class="fu">c</span>(<span class="st">&quot;food_exp&quot;</span>, <span class="st">&quot;nonfood_exp&quot;</span>),</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">winsorize_cols =</span> <span class="st">&quot;food_exp&quot;</span>,</span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">strata_col =</span> <span class="st">&quot;urban&quot;</span></span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span></code></pre></div>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co"># Winsorize outliers (e.g. food expenditure) stratified by urban/rural.</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># This adds a `food_exp_w` column and leaves `food_exp` untouched.</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>df_winsor <span class="ot">&lt;-</span> <span class="fu">ihs_winsorize</span>(df_clean, <span class="at">vars =</span> <span class="st">&quot;food_exp&quot;</span>, <span class="at">by =</span> <span class="st">&quot;urban&quot;</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># Run the master cleaning wrapper which applies both steps and logs changes</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>df_cleaned <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">data =</span> harmonised_data,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">winsorize_vars =</span> <span class="fu">c</span>(<span class="st">&quot;food_exp&quot;</span>, <span class="st">&quot;nonfood_exp&quot;</span>),</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">winsorize_by =</span> <span class="st">&quot;urban&quot;</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co"># Every transformation is recorded on the result</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">attr</span>(df_cleaned, <span class="st">&quot;ihs_audit&quot;</span>))</span></code></pre></div>
 </div>
 <div id="unit-conversion" class="section level2">
 <h2>6. Unit Conversion</h2>
@@ -432,32 +442,54 @@ quantities in non-standard units (e.g., pails, basins, ox-carts, bags)
 rather than standard kilograms. <code>ihsMW</code> bundles official NSO
 conversion factors to convert these quantities to standard
 kilograms:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Convert quantities reported in non-standard units to kilograms</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>crop_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="at">crop_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  <span class="at">unit_code =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>),</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>),</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>  <span class="at">region =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>)</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>crop_data_kg <span class="ot">&lt;-</span> <span class="fu">ihs_convert_units</span>(</span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="at">data =</span> crop_data,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>  <span class="at">crop_col =</span> <span class="st">&quot;crop_code&quot;</span>,</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>  <span class="at">unit_col =</span> <span class="st">&quot;unit_code&quot;</span>,</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  <span class="at">qty_col =</span> <span class="st">&quot;quantity&quot;</span>,</span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">region_col =</span> <span class="st">&quot;region&quot;</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; ihsMW: Dedicated offline cleaning suite loaded.</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># A `region` column, if present, is detected automatically and used to pick</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># region-specific factors. There is no `region_col` argument.</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>crop_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>  <span class="at">crop_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="at">unit_code =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>),</span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="at">quantity  =</span> <span class="fu">c</span>(<span class="dv">10</span>, <span class="dv">5</span>),</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  <span class="at">region    =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>)</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>crop_data_kg <span class="ot">&lt;-</span> <span class="fu">ihs_convert_units</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="at">data     =</span> crop_data,</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="at">crop_col =</span> <span class="st">&quot;crop_code&quot;</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>  <span class="at">unit_col =</span> <span class="st">&quot;unit_code&quot;</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>  <span class="at">qty_col  =</span> <span class="st">&quot;quantity&quot;</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a>crop_data_kg</span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt;   crop_code unit_code quantity region quantity_kg</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; 1         1         3       10      1         945</span></span>
+<span id="cb7-23"><a href="#cb7-23" tabindex="-1"></a><span class="co">#&gt; 2         2         4        5      2          25</span></span></code></pre></div>
+<p>Combinations with no official factor return <code>NA</code> rather
+than a guessed number, and the function tells you which ones failed.</p>
 </div>
 <div id="aggregation" class="section level2">
 <h2>7. Aggregation</h2>
 <p>To aggregate member-level or agricultural plot-level data up to the
-household level, use <code>ihs_aggregate()</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Aggregate individual-level education to household level</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>hh_edu <span class="ot">&lt;-</span> <span class="fu">ihs_aggregate</span>(</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">data =</span> member_data,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">id_cols =</span> <span class="st">&quot;case_id&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="at">val_cols =</span> <span class="fu">c</span>(<span class="st">&quot;years_education&quot;</span>, <span class="st">&quot;completed_primary&quot;</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>)</span></code></pre></div>
+household level, use <code>ihs_aggregate()</code>. It takes a single
+grouping column and infers a sensible aggregation for every other
+column:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>member_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">case_id           =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">years_education   =</span> <span class="fu">c</span>(<span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">4</span>, <span class="dv">6</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">completed_primary =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">ihs_aggregate</span>(member_data, <span class="at">group_col =</span> <span class="st">&quot;case_id&quot;</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; i Aggregating data by `case_id`...</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 x 3</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt;   case_id years_education completed_primary</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;             &lt;dbl&gt;             &lt;dbl&gt;</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 1 A                    20                 1</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 2 B                    10                 1</span></span></code></pre></div>
+<p>Continuous columns are summed, 0/1 columns become a logical OR, and
+text columns collapse to their single distinct value. Select your
+columns before calling if summing is not what you want.</p>
 </div>
 
 

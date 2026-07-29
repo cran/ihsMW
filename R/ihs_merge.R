@@ -13,12 +13,26 @@
 #' @return A merged data.frame with an \code{ihs_merge_log} attribute
 #'   containing row counts at each merge step.
 #'
+#' @section Auto-detected keys:
+#' When \code{by} is \code{NULL} the join keys are the intersection of
+#' \code{case_id}, \code{hhid}, \code{hh_id}, \code{HHID}, \code{ea_id} and
+#' \code{PID} with the columns common to every input. The detected keys are
+#' always printed - read them, because joining household modules on
+#' \code{PID} when you meant \code{case_id} silently changes your sample.
+#'
 #' @examples
-#' \dontrun{
-#'   hh <- haven::read_dta("hh_mod_a.dta") |> ihs_harmonise("IHS5")
-#'   ag <- haven::read_dta("ag_mod_a.dta") |> ihs_harmonise("IHS5")
-#'   merged <- ihs_merge(hh, ag)
-#' }
+#' hh <- data.frame(case_id = c("A", "B", "C"), hhsize = c(4, 6, 3))
+#' ag <- data.frame(case_id = c("A", "B", "D"), harvest_kg = c(120, 340, 90))
+#'
+#' # Left join on the auto-detected key, keeping every household
+#' merged <- ihs_merge(hh, ag)
+#' merged
+#'
+#' # Only households present in both modules
+#' ihs_merge(hh, ag, type = "inner")
+#'
+#' # Row counts at each step
+#' attr(merged, "ihs_merge_log")
 #'
 #' @export
 ihs_merge <- function(..., by = NULL, type = "left") {
@@ -74,7 +88,10 @@ ihs_merge <- function(..., by = NULL, type = "left") {
       rows_right = nrow(dfs[[i]])
     )
 
-    if (post_rows > max(pre_rows, nrow(dfs[[i]]))) {
+    # A full join legitimately returns more rows than either input whenever the
+    # two sides have non-overlapping keys, so only left/inner joins can signal
+    # a many-to-many blow-up this way.
+    if (type != "full" && post_rows > max(pre_rows, nrow(dfs[[i]]))) {
       cli::cli_warn(c(
         "Merge step {i - 1} expanded rows from {pre_rows} to {post_rows}.",
         "i" = "This may indicate a many-to-many join. Check your ID columns."
@@ -83,6 +100,21 @@ ihs_merge <- function(..., by = NULL, type = "left") {
   }
 
   cli::cli_inform("Merged {length(dfs)} data.frames: {nrow(result)} rows, {ncol(result)} columns.")
+
+  # Columns present in more than one input but not used as a join key get
+  # dplyr's .x/.y suffixes. This is easy to miss and quietly breaks downstream
+  # auto-detection: once `hh_wgt` becomes `hh_wgt.x`, ihs_svydesign() can no
+  # longer find the survey weight.
+  suffixed <- grep("[.](x|y)$", names(result), value = TRUE)
+  if (length(suffixed) > 0) {
+    stems <- unique(sub("[.](x|y)$", "", suffixed))
+    cli::cli_warn(c(
+      "{length(stems)} column{?s} appeared in more than one input and {?was/were} suffixed: {.var {stems}}",
+      "i" = "Drop the duplicates or add them to {.arg by} before relying on
+             auto-detected weight, strata or PSU columns."
+    ))
+  }
+
   attr(result, "ihs_merge_log") <- merge_log
   result
 }

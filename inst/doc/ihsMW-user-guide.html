@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Vitumbiko Kayuni" />
+
+<meta name="date" content="2026-07-29" />
+
+<title>ihsMW User Guide</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ihsMW User Guide</h1>
+<h3 class="subtitle">Cleaning and harmonising Malawi Integrated
+Household Survey data in R</h3>
+<h4 class="author">Vitumbiko Kayuni</h4>
+<h4 class="date">29 July 2026</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#about-this-guide" id="toc-about-this-guide">About this
+guide</a></li>
+<li><a href="#installation" id="toc-installation">1. Installation</a>
+<ul>
+<li><a href="#from-cran" id="toc-from-cran">From CRAN</a></li>
+<li><a href="#development-version" id="toc-development-version">Development version</a></li>
+<li><a href="#confirm-the-installation" id="toc-confirm-the-installation">Confirm the installation</a></li>
+</ul></li>
+<li><a href="#package-dependencies" id="toc-package-dependencies">2.
+Package dependencies</a>
+<ul>
+<li><a href="#required-installed-automatically" id="toc-required-installed-automatically">Required (installed
+automatically)</a></li>
+<li><a href="#suggested-install-if-you-need-the-feature" id="toc-suggested-install-if-you-need-the-feature">Suggested (install if
+you need the feature)</a></li>
+<li><a href="#no-internet-required" id="toc-no-internet-required">No
+internet required</a></li>
+</ul></li>
+<li><a href="#package-overview" id="toc-package-overview">3. Package
+overview</a>
+<ul>
+<li><a href="#the-problem" id="toc-the-problem">The problem</a></li>
+<li><a href="#what-the-package-does" id="toc-what-the-package-does">What
+the package does</a></li>
+<li><a href="#what-the-package-does-not-do" id="toc-what-the-package-does-not-do">What the package does <em>not</em>
+do</a></li>
+<li><a href="#supported-rounds" id="toc-supported-rounds">Supported
+rounds</a></li>
+</ul></li>
+<li><a href="#basic-workflow" id="toc-basic-workflow">4. Basic
+workflow</a></li>
+<li><a href="#getting-the-data" id="toc-getting-the-data">5. Getting the
+data</a>
+<ul>
+<li><a href="#prefer-the-stata-distribution" id="toc-prefer-the-stata-distribution">Prefer the Stata
+distribution</a></li>
+</ul></li>
+<li><a href="#input-data-requirements" id="toc-input-data-requirements">6. Input data requirements</a>
+<ul>
+<li><a href="#format" id="toc-format">Format</a></li>
+<li><a href="#what-each-function-needs" id="toc-what-each-function-needs">What each function needs</a></li>
+<li><a href="#column-naming" id="toc-column-naming">Column
+naming</a></li>
+</ul></li>
+<li><a href="#output-structure" id="toc-output-structure">7. Output
+structure</a>
+<ul>
+<li><a href="#new-columns-never-overwritten-values" id="toc-new-columns-never-overwritten-values">New columns, never
+overwritten values</a></li>
+<li><a href="#audit-attributes" id="toc-audit-attributes">Audit
+attributes</a></li>
+</ul></li>
+<li><a href="#function-reference" id="toc-function-reference">8.
+Function reference</a>
+<ul>
+<li><a href="#ihs_search-find-a-variable" id="toc-ihs_search-find-a-variable">8.1 <code>ihs_search()</code> — find
+a variable</a></li>
+<li><a href="#ihs_crosswalk_check-audit-cross-round-comparability" id="toc-ihs_crosswalk_check-audit-cross-round-comparability">8.2
+<code>ihs_crosswalk_check()</code> — audit cross-round comparability</a>
+<ul>
+<li><a href="#why-full-series-coverage-is-so-thin" id="toc-why-full-series-coverage-is-so-thin">Why full-series coverage is
+so thin</a></li>
+<li><a href="#needs_review-and-ihs6_expansion_of" id="toc-needs_review-and-ihs6_expansion_of"><code>needs_review</code>
+and <code>ihs6_expansion_of</code></a></li>
+</ul></li>
+<li><a href="#ihs_panel_ids-look-up-design-columns" id="toc-ihs_panel_ids-look-up-design-columns">8.3
+<code>ihs_panel_ids()</code> — look up design columns</a></li>
+<li><a href="#ihs_harmonise-rename-to-standard-names" id="toc-ihs_harmonise-rename-to-standard-names">8.4
+<code>ihs_harmonise()</code> — rename to standard names</a></li>
+<li><a href="#ihs_merge-join-modules" id="toc-ihs_merge-join-modules">8.5 <code>ihs_merge()</code> — join
+modules</a></li>
+<li><a href="#ihs_standardize_missing-recode-missing-codes" id="toc-ihs_standardize_missing-recode-missing-codes">8.6
+<code>ihs_standardize_missing()</code> — recode missing codes</a></li>
+<li><a href="#ihs_winsorize-cap-outliers" id="toc-ihs_winsorize-cap-outliers">8.7 <code>ihs_winsorize()</code> —
+cap outliers</a></li>
+<li><a href="#ihs_clean-the-wrapper" id="toc-ihs_clean-the-wrapper">8.8
+<code>ihs_clean()</code> — the wrapper</a></li>
+<li><a href="#ihs_convert_units-harvest-units-to-kilograms" id="toc-ihs_convert_units-harvest-units-to-kilograms">8.9
+<code>ihs_convert_units()</code> — harvest units to kilograms</a>
+<ul>
+<li><a href="#known-gaps-in-the-factor-table" id="toc-known-gaps-in-the-factor-table">Known gaps in the factor
+table</a></li>
+</ul></li>
+<li><a href="#ihs_aggregate-roll-up-to-the-household" id="toc-ihs_aggregate-roll-up-to-the-household">8.10
+<code>ihs_aggregate()</code> — roll up to the household</a></li>
+<li><a href="#ihs_deflate-nominal-to-real" id="toc-ihs_deflate-nominal-to-real">8.11 <code>ihs_deflate()</code> —
+nominal to real</a></li>
+<li><a href="#ihs_svydesign-build-the-survey-design" id="toc-ihs_svydesign-build-the-survey-design">8.12
+<code>ihs_svydesign()</code> — build the survey design</a></li>
+<li><a href="#ihs_report-summary-table" id="toc-ihs_report-summary-table">8.13 <code>ihs_report()</code> —
+summary table</a></li>
+</ul></li>
+<li><a href="#complete-worked-workflows" id="toc-complete-worked-workflows">9. Complete worked workflows</a>
+<ul>
+<li><a href="#workflow-a-one-round-weighted-poverty-statistics" id="toc-workflow-a-one-round-weighted-poverty-statistics">Workflow A —
+one round, weighted poverty statistics</a></li>
+<li><a href="#workflow-b-pooling-ihs4-ihs5-and-ihs6" id="toc-workflow-b-pooling-ihs4-ihs5-and-ihs6">Workflow B — pooling
+IHS4, IHS5 and IHS6</a></li>
+<li><a href="#workflow-c-agricultural-production-per-household" id="toc-workflow-c-agricultural-production-per-household">Workflow C —
+agricultural production per household</a></li>
+</ul></li>
+<li><a href="#common-mistakes" id="toc-common-mistakes">10. Common
+mistakes</a></li>
+<li><a href="#troubleshooting" id="toc-troubleshooting">11.
+Troubleshooting</a>
+<ul>
+<li><a href="#diagnosing-anything-else" id="toc-diagnosing-anything-else">Diagnosing anything else</a></li>
+</ul></li>
+<li><a href="#frequently-asked-questions" id="toc-frequently-asked-questions">12. Frequently asked
+questions</a></li>
+<li><a href="#a.-known-limitations" id="toc-a.-known-limitations">12a.
+Known limitations</a></li>
+<li><a href="#best-practices" id="toc-best-practices">13. Best
+practices</a></li>
+<li><a href="#citation" id="toc-citation">14. Citation</a></li>
+<li><a href="#getting-help-and-contributing" id="toc-getting-help-and-contributing">15. Getting help and
+contributing</a></li>
+</ul>
+</div>
+
+<div id="about-this-guide" class="section level1">
+<h1>About this guide</h1>
+<p>This is the complete manual for <strong>ihsMW</strong>, an R package
+for cleaning, harmonising and analysing the Malawi Integrated Household
+Survey (IHS).</p>
+<p>It is written to be read start to finish by someone who has never
+used the package, and then kept nearby as a reference. Every code block
+that does not require microdata runs as written — the guide is generated
+by executing its own examples, so what you see is what the package
+actually produces.</p>
+<p><strong>Three ways to read it.</strong> Online at <a href="https://vituk123.github.io/ihsMW/articles/ihsMW-user-guide.html" class="uri">https://vituk123.github.io/ihsMW/articles/ihsMW-user-guide.html</a>,
+as a <a href="https://vituk123.github.io/ihsMW/ihsMW-user-guide.pdf">PDF</a> for
+printing and offline use, or as <a href="https://vituk123.github.io/ihsMW/ihsMW-user-guide.Rmd">R Markdown
+source</a> if you want to re-run and adapt every example yourself.</p>
+<p><strong>What this guide assumes.</strong> Basic R: you can install a
+package, read a data file, and subset a data frame. It does not assume
+you know anything about the IHS, about survey weights, or about
+<code>dplyr</code>.</p>
+<hr />
+</div>
+<div id="installation" class="section level1">
+<h1>1. Installation</h1>
+<div id="from-cran" class="section level2">
+<h2>From CRAN</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&quot;ihsMW&quot;</span>)</span></code></pre></div>
+</div>
+<div id="development-version" class="section level2">
+<h2>Development version</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># install.packages(&quot;pak&quot;)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># or</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># install.packages(&quot;remotes&quot;)</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;vituk123/ihsMW&quot;</span>)</span></code></pre></div>
+</div>
+<div id="confirm-the-installation" class="section level2">
+<h2>Confirm the installation</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">packageVersion</span>(<span class="st">&quot;ihsMW&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; [1] &#39;1.1.1&#39;</span></span></code></pre></div>
+<p><code>ihsMW</code> requires <strong>R 4.1.0 or later</strong>,
+because it uses the native pipe (<code>|&gt;</code>) internally.</p>
+<hr />
+</div>
+</div>
+<div id="package-dependencies" class="section level1">
+<h1>2. Package dependencies</h1>
+<p><code>ihsMW</code> is deliberately light. Everything needed for the
+core cleaning and harmonisation workflow is a hard dependency; anything
+optional is suggested, so a minimal install stays small.</p>
+<div id="required-installed-automatically" class="section level2">
+<h2>Required (installed automatically)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Minimum</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dplyr</code></td>
+<td>1.1.0</td>
+<td>joins, grouping, aggregation</td>
+</tr>
+<tr class="even">
+<td><code>readr</code></td>
+<td>2.1.0</td>
+<td>reading the bundled crosswalk and reference CSVs</td>
+</tr>
+<tr class="odd">
+<td><code>rlang</code></td>
+<td>1.1.0</td>
+<td>argument matching and tidy evaluation</td>
+</tr>
+<tr class="even">
+<td><code>cli</code></td>
+<td>3.6.0</td>
+<td>the informative console messages and errors</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="suggested-install-if-you-need-the-feature" class="section level2">
+<h2>Suggested (install if you need the feature)</h2>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Needed for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>haven</code></td>
+<td>reading Stata <code>.dta</code> microdata — <strong>you will almost
+certainly want this</strong></td>
+</tr>
+<tr class="even">
+<td><code>survey</code></td>
+<td><code>ihs_svydesign()</code> and design-based standard errors</td>
+</tr>
+<tr class="odd">
+<td><code>srvyr</code></td>
+<td><code>dplyr</code>-style syntax over survey designs</td>
+</tr>
+<tr class="even">
+<td><code>testthat</code>, <code>withr</code>,
+<code>jsonlite</code></td>
+<td>running the package test suite</td>
+</tr>
+<tr class="odd">
+<td><code>knitr</code>, <code>rmarkdown</code>,
+<code>pkgdown</code></td>
+<td>rebuilding this guide and the website</td>
+</tr>
+</tbody>
+</table>
+<p>Install the ones most people want in one go:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;haven&quot;</span>, <span class="st">&quot;survey&quot;</span>, <span class="st">&quot;srvyr&quot;</span>))</span></code></pre></div>
+</div>
+<div id="no-internet-required" class="section level2">
+<h2>No internet required</h2>
+<p>Once installed, <code>ihsMW</code> never makes a network request. The
+crosswalk, conversion factors and CPI series are all bundled inside the
+package. This is deliberate: survey work often happens on airgapped or
+restricted machines, and an analysis that silently depends on a live API
+is not reproducible.</p>
+<hr />
+</div>
+</div>
+<div id="package-overview" class="section level1">
+<h1>3. Package overview</h1>
+<div id="the-problem" class="section level2">
+<h2>The problem</h2>
+<p>The IHS is Malawi’s flagship household survey, run roughly every five
+years by the National Statistical Office with World Bank LSMS support.
+It is the evidence base for poverty measurement, food security
+monitoring and agricultural policy in Malawi.</p>
+<p>Working with it raw is painful in specific, repetitive ways:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Variable names drift between rounds.</strong> The same
+concept is <code>hhweight</code> in IHS2 and IHS3 but
+<code>hh_wgt</code> from IHS4 onward. The design stratum is
+<code>stratum</code> through IHS5 and <code>strata</code> in IHS6.
+Multiply this across thousands of variables.</li>
+<li><strong>Missing values are coded as numbers.</strong>
+<code>-99</code> means “refused”, <code>-98</code> means “don’t know”.
+Take a mean without recoding and your average household is younger than
+zero.</li>
+<li><strong>Harvest quantities are in whatever unit the household
+used.</strong> Pails, ox-carts, heaps, 50 kg bags — all in the same
+column. Summing it is meaningless without crop-, unit- and
+region-specific conversion factors.</li>
+<li><strong>Money is nominal.</strong> Malawi’s price level rose roughly
+24-fold between 2004 and 2025. Comparing kwacha across rounds without
+deflating produces nonsense.</li>
+<li><strong>The sample is not simple random.</strong> It is a stratified
+two-stage cluster design. Ignore the weights and your estimates are
+biased; ignore the clustering and your standard errors are far too
+small.</li>
+</ol>
+<p>Every research team solves these five problems again, in their own
+scripts, with their own undocumented judgement calls. <code>ihsMW</code>
+solves them once.</p>
+</div>
+<div id="what-the-package-does" class="section level2">
+<h2>What the package does</h2>
+<p>Thirteen exported functions covering the pipeline from raw file to
+publication table:</p>
+<pre><code>#&gt; Warning in attr(x, &quot;align&quot;): &#39;xfun::attr()&#39; is deprecated.
+#&gt; Use &#39;xfun::attr2()&#39; instead.
+#&gt; See help(&quot;Deprecated&quot;)
+#&gt; Warning in attr(x, &quot;format&quot;): &#39;xfun::attr()&#39; is deprecated.
+#&gt; Use &#39;xfun::attr2()&#39; instead.
+#&gt; See help(&quot;Deprecated&quot;)</code></pre>
+<table>
+<colgroup>
+<col width="10%" />
+<col width="27%" />
+<col width="61%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">Stage</th>
+<th align="left">Function</th>
+<th align="left">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Discover</td>
+<td align="left">ihs_search()</td>
+<td align="left">Find a variable by keyword across every round</td>
+</tr>
+<tr class="even">
+<td align="left">Discover</td>
+<td align="left">ihs_crosswalk_check()</td>
+<td align="left">See how much of the crosswalk is comparable across
+rounds</td>
+</tr>
+<tr class="odd">
+<td align="left">Discover</td>
+<td align="left">ihs_panel_ids()</td>
+<td align="left">Look up the ID, weight and stratum columns for a
+round</td>
+</tr>
+<tr class="even">
+<td align="left">Discover</td>
+<td align="left">ihs_harmonise()</td>
+<td align="left">Rename raw columns to consistent harmonised names</td>
+</tr>
+<tr class="odd">
+<td align="left">Clean</td>
+<td align="left">ihs_clean()</td>
+<td align="left">Recode missing codes and winsorize, with an audit
+trail</td>
+</tr>
+<tr class="even">
+<td align="left">Clean</td>
+<td align="left">ihs_standardize_missing()</td>
+<td align="left">Turn -99/-98/999 into NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Clean</td>
+<td align="left">ihs_winsorize()</td>
+<td align="left">Cap outliers at percentiles, optionally within
+strata</td>
+</tr>
+<tr class="even">
+<td align="left">Transform</td>
+<td align="left">ihs_convert_units()</td>
+<td align="left">Convert harvest units to kilograms with NSO
+factors</td>
+</tr>
+<tr class="odd">
+<td align="left">Transform</td>
+<td align="left">ihs_aggregate()</td>
+<td align="left">Roll individual or plot records up to the
+household</td>
+</tr>
+<tr class="even">
+<td align="left">Transform</td>
+<td align="left">ihs_merge()</td>
+<td align="left">Join modules on auto-detected ID columns</td>
+</tr>
+<tr class="odd">
+<td align="left">Analyse</td>
+<td align="left">ihs_deflate()</td>
+<td align="left">Convert nominal kwacha to real, constant-price
+kwacha</td>
+</tr>
+<tr class="even">
+<td align="left">Analyse</td>
+<td align="left">ihs_svydesign()</td>
+<td align="left">Build a survey design object for correct standard
+errors</td>
+</tr>
+<tr class="odd">
+<td align="left">Analyse</td>
+<td align="left">ihs_report()</td>
+<td align="left">Produce a weighted summary statistics table</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="what-the-package-does-not-do" class="section level2">
+<h2>What the package does <em>not</em> do</h2>
+<p>Being explicit about the boundaries saves you time:</p>
+<ul>
+<li><strong>It does not distribute microdata.</strong> World Bank
+licensing forbids it. You download the files yourself (see §5).</li>
+<li><strong>It does not construct a poverty line or a consumption
+aggregate.</strong> Those are published with each round; the package
+helps you clean and compare them, not rebuild them.</li>
+<li><strong>It does not adjust for spatial price differences.</strong>
+<code>ihs_deflate()</code> applies a national CPI over time. If you need
+a Lilongwe-vs-Mzuzu price adjustment, use the spatial price index
+published with the round’s consumption aggregate.</li>
+<li><strong>It does not link households into a panel across
+rounds.</strong> The IHS panel component has its own ID structure and
+attrition rules; <code>ihs_panel_ids()</code> tells you which columns to
+use, but the linking logic is yours.</li>
+<li><strong>It does not make judgement calls for you.</strong> When a
+variable cannot be mapped or a unit cannot be converted, you get
+<code>NA</code> and a message — never a quietly invented number.</li>
+</ul>
+</div>
+<div id="supported-rounds" class="section level2">
+<h2>Supported rounds</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="st">&quot;all&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt; Panel ID columns across all supported IHS rounds.</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt;       role     IHS2     IHS3    IHS4    IHS5    IHS6</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; 1    hh_id  case_id  case_id case_id case_id case_id</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; 2 indiv_id      PID      PID     PID     PID     PID</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; 3    ea_id    ea_id    ea_id   ea_id   ea_id   ea_id</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="co">#&gt; 4   strata  stratum  stratum stratum stratum  strata</span></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">#&gt; 5   weight hhweight hhweight  hh_wgt  hh_wgt  hh_wgt</span></span></code></pre></div>
+<p>Note the two renames that catch people out: the weight column changes
+at IHS4, and the stratum column changes at IHS6.
+<code>ihs_svydesign()</code> handles both automatically.</p>
+<p>IHS1 (1997/98) is not supported — it is not available in a form the
+crosswalk can address.</p>
+<hr />
+</div>
+</div>
+<div id="basic-workflow" class="section level1">
+<h1>4. Basic workflow</h1>
+<p>Almost every analysis follows the same seven steps.</p>
+<pre><code>  +------------------------+
+  | 1. Read raw file       |   haven::read_dta() / readr::read_csv()
+  +-----------+------------+
+              v
+  +------------------------+
+  | 2. Harmonise names     |   ihs_harmonise(round = &quot;IHS6&quot;)
+  +-----------+------------+
+              v
+  +------------------------+
+  | 3. Merge modules       |   ihs_merge()
+  +-----------+------------+
+              v
+  +------------------------+
+  | 4. Clean               |   ihs_clean()
+  +-----------+------------+
+              v
+  +------------------------+
+  | 5. Convert &amp; deflate   |   ihs_convert_units() / ihs_deflate()
+  +-----------+------------+
+              v
+  +------------------------+
+  | 6. Survey design       |   ihs_svydesign()
+  +-----------+------------+
+              v
+  +------------------------+
+  | 7. Report              |   ihs_report() / survey::svymean()
+  +------------------------+</code></pre>
+<p>The order matters in two places:</p>
+<ul>
+<li><strong>Harmonise before merging.</strong> <code>ihs_merge()</code>
+detects join keys by name, and those names only line up after
+harmonisation.</li>
+<li><strong>Build the design before subsetting.</strong> Filtering rows
+out of a data frame destroys the stratum and cluster structure. Create
+the design on the full data, then use <code>survey::subset()</code> on
+the design object.</li>
+</ul>
+<hr />
+</div>
+<div id="getting-the-data" class="section level1">
+<h1>5. Getting the data</h1>
+<p>The microdata are free but require registration.</p>
+<ol style="list-style-type: decimal">
+<li><p>Go to the <a href="https://microdata.worldbank.org">World Bank
+Microdata Library</a>.</p></li>
+<li><p>Search for the round you want:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Round</th>
+<th>Years</th>
+<th>Catalogue title</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>IHS2</td>
+<td>2004/05</td>
+<td>Malawi Second Integrated Household Survey</td>
+</tr>
+<tr class="even">
+<td>IHS3</td>
+<td>2010/11</td>
+<td>Malawi Third Integrated Household Survey</td>
+</tr>
+<tr class="odd">
+<td>IHS4</td>
+<td>2016/17</td>
+<td>Malawi Fourth Integrated Household Survey</td>
+</tr>
+<tr class="even">
+<td>IHS5</td>
+<td>2019/20</td>
+<td>Malawi Fifth Integrated Household Survey</td>
+</tr>
+<tr class="odd">
+<td>IHS6</td>
+<td>2024/25</td>
+<td>Malawi Sixth Integrated Household Survey</td>
+</tr>
+</tbody>
+</table></li>
+<li><p>Request access, stating your research purpose. Approval is
+usually quick.</p></li>
+<li><p>Download the <strong>Stata (<code>.dta</code>)</strong>
+distribution if you have a choice — see the warning below.</p></li>
+<li><p>Unzip into a folder per round.</p></li>
+</ol>
+<div id="prefer-the-stata-distribution" class="section level2">
+<h2>Prefer the Stata distribution</h2>
+<p>Some IHS CSV exports substitute <em>value labels</em> for numeric
+codes. In the IHS5 CSV release, for instance, <code>crop_code</code>
+contains <code>&quot;MAIZE LOCAL&quot;</code> rather than <code>1</code>, and the
+harvest unit contains <code>&quot;50 KG BAG&quot;</code> rather than
+<code>2</code>. The conversion factor table is keyed on the numeric
+codes, so unit conversion cannot work on those files.</p>
+<p><code>ihs_convert_units()</code> detects this and stops with an
+explanatory error rather than handing you a column of <code>NA</code>.
+The fix is to read the <code>.dta</code> version:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>ag <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">&quot;IHS5/ag_mod_i.dta&quot;</span>)   <span class="co"># numeric codes, with labels attached</span></span></code></pre></div>
+<p><code>haven</code> also preserves variable labels, which
+<code>ihs_harmonise()</code> carries through the rename.</p>
+<hr />
+</div>
+</div>
+<div id="input-data-requirements" class="section level1">
+<h1>6. Input data requirements</h1>
+<div id="format" class="section level2">
+<h2>Format</h2>
+<p>Any <code>data.frame</code> works, including a <code>tibble</code> or
+the labelled data frame that <code>haven::read_dta()</code> returns.
+<code>ihsMW</code> returns the same class it was given.</p>
+</div>
+<div id="what-each-function-needs" class="section level2">
+<h2>What each function needs</h2>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Requires</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ihs_harmonise()</code></td>
+<td>Any data frame; column names matching the round’s crosswalk
+entries</td>
+</tr>
+<tr class="even">
+<td><code>ihs_merge()</code></td>
+<td>Two or more data frames sharing at least one ID column</td>
+</tr>
+<tr class="odd">
+<td><code>ihs_standardize_missing()</code></td>
+<td>Any data frame; only numeric columns are touched</td>
+</tr>
+<tr class="even">
+<td><code>ihs_winsorize()</code></td>
+<td>Numeric target columns; the <code>by</code> column must exist</td>
+</tr>
+<tr class="odd">
+<td><code>ihs_convert_units()</code></td>
+<td>Numeric <code>crop</code>, <code>unit</code> and quantity
+columns</td>
+</tr>
+<tr class="even">
+<td><code>ihs_aggregate()</code></td>
+<td>A grouping column present in the data</td>
+</tr>
+<tr class="odd">
+<td><code>ihs_deflate()</code></td>
+<td>Numeric value columns plus a <code>round</code> argument or an
+<code>ihs_round</code> column</td>
+</tr>
+<tr class="even">
+<td><code>ihs_svydesign()</code></td>
+<td>A weight column; strata and PSU columns if you want them used</td>
+</tr>
+<tr class="odd">
+<td><code>ihs_report()</code></td>
+<td>Numeric variables; grouping and weight columns if used</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="column-naming" class="section level2">
+<h2>Column naming</h2>
+<p>After <code>ihs_harmonise()</code>, columns carry the crosswalk’s
+<code>harmonised_name</code>. Downstream functions detect standard
+columns case-insensitively, so <code>HHID</code> and <code>hhid</code>
+are equivalent. The names each function looks for:</p>
+<ul>
+<li><strong>Weights:</strong> <code>hh_wgt</code>,
+<code>hhweight</code>, <code>weight</code>, <code>panelweight</code>,
+<code>hh_wgt_adj</code>, <code>hhwght</code></li>
+<li><strong>Strata:</strong> <code>stratum</code>, <code>strata</code>,
+<code>strataid</code>, <code>strat</code></li>
+<li><strong>PSU / cluster:</strong> <code>ea_id</code>,
+<code>psu</code>, <code>cluster</code>, <code>clusterid</code></li>
+<li><strong>Join keys:</strong> <code>case_id</code>, <code>hhid</code>,
+<code>hh_id</code>, <code>HHID</code>, <code>ea_id</code>,
+<code>PID</code></li>
+</ul>
+<p>If your columns are named differently, pass them explicitly — every
+auto-detecting function accepts an override.</p>
+<hr />
+</div>
+</div>
+<div id="output-structure" class="section level1">
+<h1>7. Output structure</h1>
+<div id="new-columns-never-overwritten-values" class="section level2">
+<h2>New columns, never overwritten values</h2>
+<p><code>ihsMW</code> never modifies a value in place. Transformations
+add a suffixed column and leave the original intact, so you can always
+audit or revert:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Suffix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ihs_winsorize()</code></td>
+<td><code>_w</code></td>
+<td><code>food_exp</code> → <code>food_exp_w</code></td>
+</tr>
+<tr class="even">
+<td><code>ihs_convert_units()</code></td>
+<td><code>_kg</code></td>
+<td><code>quantity</code> → <code>quantity_kg</code></td>
+</tr>
+<tr class="odd">
+<td><code>ihs_deflate()</code></td>
+<td><code>_real</code></td>
+<td><code>food_exp</code> → <code>food_exp_real</code></td>
+</tr>
+</tbody>
+</table>
+<p>Suffixes compose, which is how you tell at a glance what has been
+done: <code>rexp_cat011_w_real</code> is a winsorized, then deflated,
+food consumption variable.</p>
+<p><code>ihs_harmonise()</code> is the exception — renaming columns is
+its entire purpose. It also adds an <code>ihs_round</code> column, which
+<code>ihs_deflate()</code> later reads.</p>
+</div>
+<div id="audit-attributes" class="section level2">
+<h2>Audit attributes</h2>
+<p>Several functions attach a machine-readable record of what they
+did:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>survey_data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="at">region   =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>), <span class="at">each =</span> <span class="dv">50</span>),</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="at">food_exp =</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">10</span>), <span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">500</span>, <span class="dv">50</span>))</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>)</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>survey_data<span class="sc">$</span>food_exp[<span class="dv">1</span>]  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="dv">99</span>      <span class="co"># a refusal code</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>survey_data<span class="sc">$</span>food_exp[<span class="dv">60</span>] <span class="ot">&lt;-</span> <span class="dv">99999</span>    <span class="co"># an implausible outlier</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>cleaned <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(survey_data,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>                     <span class="at">winsorize_vars =</span> <span class="st">&quot;food_exp&quot;</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>                     <span class="at">winsorize_by   =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">attr</span>(cleaned, <span class="st">&quot;ihs_audit&quot;</span>))</span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; List of 6</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt;  $ initial_rows       : int 100</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt;  $ initial_cols       : int 2</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt;  $ missing_conversions:List of 1</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt;   ..$ food_exp: int 1</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt;  $ winsorized_vars    :List of 1</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt;   ..$ food_exp:List of 2</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt;   .. ..$ capped_lower: num 2</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt;   .. ..$ capped_upper: num 2</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt;  $ final_rows         : int 100</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt;  $ final_cols         : int 3</span></span></code></pre></div>
+<p>The audit tells you 1 value was recoded to <code>NA</code> and how
+many observations were capped at each bound. Put this in your appendix
+and reviewers stop asking how you handled outliers.</p>
+<p>Attributes available:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Attribute</th>
+<th>Set by</th>
+<th>Contains</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ihs_audit</code></td>
+<td><code>ihs_clean()</code></td>
+<td>Row/column counts before and after, plus both logs below</td>
+</tr>
+<tr class="even">
+<td><code>ihs_missing_conversions</code></td>
+<td><code>ihs_standardize_missing()</code></td>
+<td>Count of values recoded per column</td>
+</tr>
+<tr class="odd">
+<td><code>ihs_winsorized_vars</code></td>
+<td><code>ihs_winsorize()</code></td>
+<td>Count capped at lower and upper bound per variable</td>
+</tr>
+<tr class="even">
+<td><code>ihs_merge_log</code></td>
+<td><code>ihs_merge()</code></td>
+<td>Row counts at each merge step</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+<div id="function-reference" class="section level1">
+<h1>8. Function reference</h1>
+<p>Every exported function, in workflow order.</p>
+<div id="ihs_search-find-a-variable" class="section level2">
+<h2>8.1 <code>ihs_search()</code> — find a variable</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">ihs_search</span>(keyword, <span class="at">round =</span> <span class="cn">NULL</span>, <span class="at">fields =</span> <span class="fu">c</span>(<span class="st">&quot;name&quot;</span>, <span class="st">&quot;label&quot;</span>, <span class="st">&quot;module&quot;</span>))</span></code></pre></div>
+<p>Searches the bundled crosswalk. Use it before writing any code, to
+find out what your variable is called in each round.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ihs_search</span>(<span class="st">&quot;household size&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co">#&gt; Found 1 variable matching &quot;household size&quot;.</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>res[, <span class="fu">c</span>(<span class="st">&quot;harmonised_name&quot;</span>, <span class="st">&quot;label&quot;</span>, <span class="st">&quot;ihs2_name&quot;</span>, <span class="st">&quot;ihs5_name&quot;</span>, <span class="st">&quot;ihs6_name&quot;</span>, <span class="st">&quot;n_rounds&quot;</span>)]</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 x 6</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;   harmonised_name label          ihs2_name ihs5_name ihs6_name n_rounds</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; 1 hhsize          Household size hhsize    hhsize    hhsize           5</span></span></code></pre></div>
+<p>Restrict to a round to see only variables that exist in it:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">nrow</span>(<span class="fu">ihs_search</span>(<span class="st">&quot;livestock&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>))</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt; Found 44 variables matching &quot;livestock&quot;.</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; [1] 44</span></span></code></pre></div>
+<p>Search a single field to cut noise:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">nrow</span>(<span class="fu">ihs_search</span>(<span class="st">&quot;expenditure&quot;</span>, <span class="at">fields =</span> <span class="st">&quot;label&quot;</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; Found 5 variables matching &quot;expenditure&quot;.</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span></code></pre></div>
+<p><strong>Returns</strong> a tibble with one row per matching variable,
+one <code>ihs*_name</code> column per round, <code>n_rounds</code> (how
+many rounds it appears in) and <code>needs_review</code>.</p>
+<p><strong>Watch out:</strong> <code>keyword</code> is a regular
+expression, so <code>.</code> and <code>(</code> are special. Search for
+<code>&quot;exp&quot;</code>, not <code>&quot;exp(&quot;</code>.</p>
+<hr />
+</div>
+<div id="ihs_crosswalk_check-audit-cross-round-comparability" class="section level2">
+<h2>8.2 <code>ihs_crosswalk_check()</code> — audit cross-round
+comparability</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>(<span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Prints a coverage report and returns the full crosswalk. Run it
+before committing to a pooled multi-round analysis.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>cw <span class="ot">&lt;-</span> <span class="fu">ihs_crosswalk_check</span>(<span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="fu">nrow</span>(cw)                    <span class="co"># total harmonised variables</span></span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; [1] 6482</span></span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="fu">table</span>(cw<span class="sc">$</span>n_rounds_avail)    <span class="co"># how many rounds each appears in</span></span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;    1    2    3    4    5 </span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt; 3293  664 1165 1311   49</span></span></code></pre></div>
+<p>Read that table carefully. Coverage is <strong>not</strong> uniform —
+only a small core of variables appears in all five rounds, and most
+appear in one or two. Any claim of a “consistent 20-year series” needs
+to survive this table first.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Variables available in every round</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">head</span>(cw<span class="sc">$</span>harmonised_name[cw<span class="sc">$</span>n_rounds_avail <span class="sc">==</span> <span class="dv">5</span>], <span class="dv">15</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;  [1] &quot;case_id&quot;     &quot;hhid&quot;        &quot;hhsize&quot;      &quot;plotid&quot;      &quot;poor&quot;       </span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt;  [6] &quot;region&quot;      &quot;reside&quot;      &quot;rexp_cat01&quot;  &quot;rexp_cat011&quot; &quot;rexp_cat012&quot;</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; [11] &quot;rexp_cat02&quot;  &quot;rexp_cat021&quot; &quot;rexp_cat022&quot; &quot;rexp_cat03&quot;  &quot;rexp_cat031&quot;</span></span></code></pre></div>
+<div id="why-full-series-coverage-is-so-thin" class="section level3">
+<h3>Why full-series coverage is so thin</h3>
+<p>Two things drive it, and it is worth knowing which is which:</p>
+<ol style="list-style-type: decimal">
+<li><strong>IHS2 is a much smaller instrument.</strong> It has roughly
+1,276 variables against IHS6’s 3,214. A large share of what later rounds
+ask simply was not asked in 2004.</li>
+<li><strong>The crosswalk is built mostly by matching variable
+names.</strong> About 98% of its rows link rounds that happen to use the
+<em>same</em> name. IHS2 used an entirely different naming scheme
+(<code>ca15</code>, <code>cd37</code>, <code>sec_a</code>), so only 85
+of its 1,272 mapped variables currently link to a later round.</li>
+</ol>
+<p>Point 2 means the all-five-rounds count is a <strong>lower
+bound</strong>, not a ceiling. Label-based matching would recover more
+IHS2 links, and contributions on that front are welcome — see §15.
+Coverage from IHS3 onwards is much better:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">c</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>  <span class="st">`</span><span class="at">IHS3+IHS4+IHS5</span><span class="st">`</span>      <span class="ot">=</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs3_name) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs4_name) <span class="sc">&amp;</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs5_name)),</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a>  <span class="st">`</span><span class="at">IHS4+IHS5+IHS6</span><span class="st">`</span>      <span class="ot">=</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs4_name) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs5_name) <span class="sc">&amp;</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>                              <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs6_name)),</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>  <span class="st">`</span><span class="at">all five rounds</span><span class="st">`</span>     <span class="ot">=</span> <span class="fu">sum</span>(cw<span class="sc">$</span>n_rounds_avail <span class="sc">==</span> <span class="dv">5</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>)</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt;  IHS3+IHS4+IHS5  IHS4+IHS5+IHS6 all five rounds </span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt;            1637            2200              49</span></span></code></pre></div>
+<p>If your question can be answered from IHS3 onwards, you have far more
+to work with than the all-five figure suggests.</p>
+</div>
+<div id="needs_review-and-ihs6_expansion_of" class="section level3">
+<h3><code>needs_review</code> and <code>ihs6_expansion_of</code></h3>
+<p>Two columns describe how much to trust an IHS6 mapping:</p>
+<ul>
+<li><code>ihs6_expansion_of</code> names the parent question when IHS6
+split a “select all that apply” item into one binary column per option.
+IHS5’s single <code>ag_e07</code> became <code>ag_e07__1</code>,
+<code>ag_e07__4</code> and so on. These are <strong>not</strong> new
+concepts, and there are 342 of them.</li>
+<li><code>needs_review</code> marks a variable that is new in IHS6 and
+whose concept has not been cross-checked against an earlier instrument.
+Confirm what it measures before pooling it across rounds.</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Multi-select expansions, with their parent question</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>exp <span class="ot">&lt;-</span> cw[<span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs6_expansion_of),</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>          <span class="fu">c</span>(<span class="st">&quot;harmonised_name&quot;</span>, <span class="st">&quot;ihs6_expansion_of&quot;</span>)]</span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="fu">head</span>(exp, <span class="dv">5</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 x 2</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;   harmonised_name ihs6_expansion_of</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;           &lt;chr&gt;            </span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt; 1 ag_d53__0       ag_d53           </span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt; 2 ag_d53__1       ag_d53           </span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt; 3 ag_d53__2       ag_d53           </span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt; 4 ag_d55__0       ag_d55           </span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; 5 ag_d55__1       ag_d55</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="fu">nrow</span>(exp)</span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="co">#&gt; [1] 342</span></span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="ihs_panel_ids-look-up-design-columns" class="section level2">
+<h2>8.3 <code>ihs_panel_ids()</code> — look up design columns</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt; Standard ID columns for &quot;IHS6&quot;:</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt;     hh_id  indiv_id     ea_id    strata    weight </span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; &quot;case_id&quot;     &quot;PID&quot;   &quot;ea_id&quot;  &quot;strata&quot;  &quot;hh_wgt&quot;</span></span></code></pre></div>
+<p>Use <code>&quot;all&quot;</code> for the cross-round comparison shown in
+§3.</p>
+<hr />
+</div>
+<div id="ihs_harmonise-rename-to-standard-names" class="section level2">
+<h2>8.4 <code>ihs_harmonise()</code> — rename to standard names</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">ihs_harmonise</span>(data, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>, <span class="at">extra =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>The foundation of everything else. Renames raw columns to harmonised
+names using the crosswalk, preserving Stata variable labels, and adds an
+<code>ihs_round</code> column.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>raw <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>  <span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">&quot;a&quot;</span>, <span class="st">&quot;b&quot;</span>),</span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="at">hhsize  =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>),</span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>  <span class="at">junk    =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>)</span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a><span class="fu">ihs_harmonise</span>(raw, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a><span class="co">#&gt; Harmonised 2 columns for IHS6.</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a><span class="co">#&gt;   case_id hhsize ihs_round</span></span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a><span class="co">#&gt; 1       a      4      IHS6</span></span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a><span class="co">#&gt; 2       b      6      IHS6</span></span></code></pre></div>
+<p>By default, columns absent from the crosswalk are dropped. Keep
+everything with <code>extra = TRUE</code>:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">ihs_harmonise</span>(raw, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>, <span class="at">extra =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">#&gt; Harmonised 2 columns for IHS6.</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">#&gt;   case_id hhsize junk ihs_round</span></span>
+<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="co">#&gt; 1       a      4    1      IHS6</span></span>
+<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="co">#&gt; 2       b      6    2      IHS6</span></span></code></pre></div>
+<p><strong>Watch out:</strong></p>
+<ul>
+<li>Matching is case-insensitive, and each raw column is claimed by at
+most one crosswalk entry.</li>
+<li>A warning that <em>no</em> columns mapped almost always means the
+wrong <code>round</code>.</li>
+<li><code>extra = FALSE</code> is destructive. If you need a variable
+that is not in the crosswalk, use <code>extra = TRUE</code> and open an
+issue so it can be added.</li>
+</ul>
+<hr />
+</div>
+<div id="ihs_merge-join-modules" class="section level2">
+<h2>8.5 <code>ihs_merge()</code> — join modules</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">ihs_merge</span>(..., <span class="at">by =</span> <span class="cn">NULL</span>, <span class="at">type =</span> <span class="st">&quot;left&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>), <span class="at">hhsize =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">3</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>ag <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;D&quot;</span>), <span class="at">harvest_kg =</span> <span class="fu">c</span>(<span class="dv">120</span>, <span class="dv">340</span>, <span class="dv">90</span>))</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>merged <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(hh, ag)</span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt; Auto-detected join columns: &quot;case_id&quot;</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="co">#&gt; Merged 2 data.frames: 3 rows, 3 columns.</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>merged</span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="co">#&gt;   case_id hhsize harvest_kg</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt; 1       A      4        120</span></span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a><span class="co">#&gt; 2       B      6        340</span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a><span class="co">#&gt; 3       C      3         NA</span></span></code></pre></div>
+<p><code>type</code> may be <code>&quot;left&quot;</code> (default),
+<code>&quot;inner&quot;</code> or <code>&quot;full&quot;</code>. Row counts at each step are
+recorded:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="fu">attr</span>(merged, <span class="st">&quot;ihs_merge_log&quot;</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">#&gt; [[1]]$step</span></span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a><span class="co">#&gt; [[1]]$rows</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-9"><a href="#cb26-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-10"><a href="#cb26-10" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb26-11"><a href="#cb26-11" tabindex="-1"></a><span class="co">#&gt; [[2]]$step</span></span>
+<span id="cb26-12"><a href="#cb26-12" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb26-13"><a href="#cb26-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-14"><a href="#cb26-14" tabindex="-1"></a><span class="co">#&gt; [[2]]$rows_before</span></span>
+<span id="cb26-15"><a href="#cb26-15" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span>
+<span id="cb26-16"><a href="#cb26-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-17"><a href="#cb26-17" tabindex="-1"></a><span class="co">#&gt; [[2]]$rows_after</span></span>
+<span id="cb26-18"><a href="#cb26-18" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span>
+<span id="cb26-19"><a href="#cb26-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb26-20"><a href="#cb26-20" tabindex="-1"></a><span class="co">#&gt; [[2]]$rows_right</span></span>
+<span id="cb26-21"><a href="#cb26-21" tabindex="-1"></a><span class="co">#&gt; [1] 3</span></span></code></pre></div>
+<p><strong>Watch out:</strong> columns present in more than one input
+but not used as join keys get dplyr’s <code>.x</code>/<code>.y</code>
+suffixes. <code>ihs_merge()</code> warns when this happens, because it
+silently breaks downstream auto-detection — once <code>hh_wgt</code>
+becomes <code>hh_wgt.x</code>, <code>ihs_svydesign()</code> can no
+longer find the survey weight:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>), <span class="at">region =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">case_id =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>), <span class="at">region =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">y =</span> <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">suppressWarnings</span>(<span class="fu">ihs_merge</span>(a, b)))</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="co">#&gt; Auto-detected join columns: &quot;case_id&quot;</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a><span class="co">#&gt; Merged 2 data.frames: 2 rows, 5 columns.</span></span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a><span class="co">#&gt; [1] &quot;case_id&quot;  &quot;region.x&quot; &quot;x&quot;        &quot;region.y&quot; &quot;y&quot;</span></span></code></pre></div>
+<p>Fix it by dropping the duplicate before merging, or by adding the
+shared column to <code>by</code>:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">ihs_merge</span>(a, b, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;case_id&quot;</span>, <span class="st">&quot;region&quot;</span>)))</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#&gt; Merged 2 data.frames: 2 rows, 4 columns.</span></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;case_id&quot; &quot;region&quot;  &quot;x&quot;       &quot;y&quot;</span></span></code></pre></div>
+<hr />
+</div>
+<div id="ihs_standardize_missing-recode-missing-codes" class="section level2">
+<h2>8.6 <code>ihs_standardize_missing()</code> — recode missing
+codes</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">ihs_standardize_missing</span>(data)</span></code></pre></div>
+<p>Recodes <code>-99</code>, <code>-98</code>, <code>-97</code>,
+<code>999</code>, <code>998</code> and <code>997</code> to
+<code>NA</code> in numeric columns.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">age =</span> <span class="fu">c</span>(<span class="dv">34</span>, <span class="sc">-</span><span class="dv">99</span>, <span class="dv">41</span>, <span class="dv">998</span>), <span class="at">village =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;C&quot;</span>, <span class="st">&quot;D&quot;</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>clean <span class="ot">&lt;-</span> <span class="fu">ihs_standardize_missing</span>(df)</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>clean<span class="sc">$</span>age</span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a><span class="co">#&gt; [1] 34 NA 41 NA</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="fu">attr</span>(clean, <span class="st">&quot;ihs_missing_conversions&quot;</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a><span class="co">#&gt; $age</span></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span></code></pre></div>
+<p><strong>Watch out:</strong> <code>999</code> is a legitimate value
+for some variables — a plot area in square metres, a price in kwacha.
+This is a blanket recode. Check your variables first, and if in doubt
+pass only the affected columns.</p>
+<hr />
+</div>
+<div id="ihs_winsorize-cap-outliers" class="section level2">
+<h2>8.7 <code>ihs_winsorize()</code> — cap outliers</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">ihs_winsorize</span>(data, vars, <span class="at">by =</span> <span class="cn">NULL</span>, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>))</span></code></pre></div>
+<p>Caps values below the lower and above the upper percentile, writing
+the result to a new <code>_w</code> column.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>  <span class="at">region =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;North&quot;</span>, <span class="st">&quot;South&quot;</span>), <span class="at">each =</span> <span class="dv">50</span>),</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>  <span class="at">cons   =</span> <span class="fu">c</span>(<span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">10</span>), <span class="fu">rnorm</span>(<span class="dv">50</span>, <span class="dv">500</span>, <span class="dv">50</span>))</span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>)</span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a>global    <span class="ot">&lt;-</span> <span class="fu">ihs_winsorize</span>(df, <span class="at">vars =</span> <span class="st">&quot;cons&quot;</span>, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a>by_region <span class="ot">&lt;-</span> <span class="fu">ihs_winsorize</span>(df, <span class="at">vars =</span> <span class="st">&quot;cons&quot;</span>, <span class="at">by =</span> <span class="st">&quot;region&quot;</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a>                           <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>))</span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co"># The raw column is untouched either way</span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="fu">identical</span>(global<span class="sc">$</span>cons, df<span class="sc">$</span>cons)</span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p><strong>Why stratify.</strong> A single national 99th percentile
+treats the richest rural households as outliers, because the urban
+distribution sits far above them. Compare the maximum retained in the
+North under each approach:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">c</span>(<span class="at">global    =</span> <span class="fu">max</span>(global<span class="sc">$</span>cons_w[global<span class="sc">$</span>region <span class="sc">==</span> <span class="st">&quot;North&quot;</span>]),</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="at">stratified =</span> <span class="fu">max</span>(by_region<span class="sc">$</span>cons_w[by_region<span class="sc">$</span>region <span class="sc">==</span> <span class="st">&quot;North&quot;</span>]))</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="co">#&gt;     global stratified </span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="co">#&gt;   122.8665   117.2254</span></span></code></pre></div>
+<p>Stratifying preserves the shape of both distributions. This matters
+enormously for inequality and poverty measures.</p>
+<hr />
+</div>
+<div id="ihs_clean-the-wrapper" class="section level2">
+<h2>8.8 <code>ihs_clean()</code> — the wrapper</h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">ihs_clean</span>(data, <span class="at">winsorize_vars =</span> <span class="cn">NULL</span>, <span class="at">winsorize_by =</span> <span class="cn">NULL</span>,</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>          <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.99</span>))</span></code></pre></div>
+<p>Runs <code>ihs_standardize_missing()</code> and then
+<code>ihs_winsorize()</code>, collecting both audit logs into a single
+<code>ihs_audit</code> attribute. Use it unless you need finer
+control.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(df, <span class="at">winsorize_vars =</span> <span class="st">&quot;cons&quot;</span>, <span class="at">winsorize_by =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="fu">names</span>(<span class="fu">attr</span>(result, <span class="st">&quot;ihs_audit&quot;</span>))</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="co">#&gt; [1] &quot;initial_rows&quot;        &quot;initial_cols&quot;        &quot;missing_conversions&quot;</span></span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="co">#&gt; [4] &quot;winsorized_vars&quot;     &quot;final_rows&quot;          &quot;final_cols&quot;</span></span></code></pre></div>
+<p><strong>Watch out:</strong> the argument is
+<code>winsorize_vars</code>, not <code>winsorize_cols</code>, and the
+grouping argument is <code>winsorize_by</code>, not
+<code>strata_col</code>. There is no <code>missing_cols</code> argument
+— missing-code recoding always applies to every numeric column.</p>
+<hr />
+</div>
+<div id="ihs_convert_units-harvest-units-to-kilograms" class="section level2">
+<h2>8.9 <code>ihs_convert_units()</code> — harvest units to
+kilograms</h2>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">ihs_convert_units</span>(data, qty_col, unit_col, crop_col, <span class="at">unmapped =</span> <span class="st">&quot;warn&quot;</span>)</span></code></pre></div>
+<p>Converts reported harvest quantities to kilograms using 1,608
+official NSO conversion factors, keyed on crop, unit, region and
+shelling condition.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>harvest <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>  <span class="at">crop_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>  <span class="at">unit_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>  <span class="at">quantity  =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">2</span>, <span class="dv">5</span>),</span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>  <span class="at">region    =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a>)</span>
+<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a></span>
+<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a><span class="fu">ihs_convert_units</span>(harvest, <span class="at">qty_col =</span> <span class="st">&quot;quantity&quot;</span>,</span>
+<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a>                  <span class="at">unit_col =</span> <span class="st">&quot;unit_code&quot;</span>, <span class="at">crop_col =</span> <span class="st">&quot;crop_code&quot;</span>)</span>
+<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a><span class="co">#&gt;   crop_code unit_code quantity region quantity_kg</span></span>
+<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a><span class="co">#&gt; 1         1         1      100      1         100</span></span>
+<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a><span class="co">#&gt; 2         1         2        2      2         100</span></span>
+<span id="cb37-13"><a href="#cb37-13" tabindex="-1"></a><span class="co">#&gt; 3         1         3        5      2         450</span></span></code></pre></div>
+<p>Two pails of maize is 100 kg; five of the next unit up is 450 kg.
+Summing the raw <code>quantity</code> column would have given 107 of
+nothing in particular.</p>
+<p><strong>Matching rules,</strong> applied in order:</p>
+<ol style="list-style-type: decimal">
+<li>exact match on crop, unit, region and condition;</li>
+<li>same crop, unit and region, falling back through the condition
+preference order shelled (1) → not applicable (3) → unshelled (2);</li>
+<li>the same two steps against the Central region, used as the national
+fallback when a crop-unit pair has no factor for the row’s own
+region.</li>
+</ol>
+<p>A <code>region</code> column is detected automatically. Without one,
+every row is priced at Central-region factors and the function says so —
+applying Central factors to Northern or Southern harvests biases every
+converted quantity.</p>
+<p>There is one exception to the crop-specific rule. Unit code 1 is
+KILOGRAM, and a kilogram is a kilogram whatever the crop, so quantities
+already reported in kilograms convert even for crops the factor table
+does not list — including those introduced in IHS6:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>kg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">crop_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">48</span>), <span class="at">unit_code =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">40</span>))</span>
+<span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a><span class="fu">ihs_convert_units</span>(kg, <span class="st">&quot;quantity&quot;</span>, <span class="st">&quot;unit_code&quot;</span>, <span class="st">&quot;crop_code&quot;</span>)</span>
+<span id="cb38-3"><a href="#cb38-3" tabindex="-1"></a><span class="co">#&gt; No region column found; using Central-region conversion factors for all rows.</span></span>
+<span id="cb38-4"><a href="#cb38-4" tabindex="-1"></a><span class="co">#&gt; i Add a `region` column to use region-specific factors.</span></span>
+<span id="cb38-5"><a href="#cb38-5" tabindex="-1"></a><span class="co">#&gt;   crop_code unit_code quantity quantity_kg</span></span>
+<span id="cb38-6"><a href="#cb38-6" tabindex="-1"></a><span class="co">#&gt; 1         1         1        7           7</span></span>
+<span id="cb38-7"><a href="#cb38-7" tabindex="-1"></a><span class="co">#&gt; 2        48         1       40          40</span></span></code></pre></div>
+<p>The package verifies this against the bundled table rather than
+assuming it: if a future NSO release gave the kilogram unit a
+crop-specific factor, the rule switches itself off.</p>
+<p><strong>Unmappable combinations return <code>NA</code>,</strong>
+never a guess, and the function names them:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>odd <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">crop_code =</span> <span class="dv">999</span>, <span class="at">unit_code =</span> <span class="dv">999</span>, <span class="at">quantity =</span> <span class="dv">10</span>)</span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="fu">suppressWarnings</span>(</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a>  <span class="fu">ihs_convert_units</span>(odd, <span class="st">&quot;quantity&quot;</span>, <span class="st">&quot;unit_code&quot;</span>, <span class="st">&quot;crop_code&quot;</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a>)</span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">#&gt; No region column found; using Central-region conversion factors for all rows.</span></span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="co">#&gt; i Add a `region` column to use region-specific factors.</span></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a><span class="co">#&gt;   crop_code unit_code quantity quantity_kg</span></span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="co">#&gt; 1       999       999       10          NA</span></span></code></pre></div>
+<p>Set <code>unmapped = &quot;error&quot;</code> to make failures fatal in a
+production pipeline, or <code>&quot;ignore&quot;</code> to silence the warning
+once you have understood it.</p>
+<div id="known-gaps-in-the-factor-table" class="section level3">
+<h3>Known gaps in the factor table</h3>
+<p>On IHS6 crop sales, about 10% of otherwise-convertible rows still
+return <code>NA</code>. The causes, in order of size:</p>
+<ul>
+<li><strong>Units with no published factor at all</strong> — code 6
+(No. 10 plate), 7 (No. 12 plate) and 10 (bale) are used in IHS6 but
+absent from the NSO table.</li>
+<li><strong>Crops introduced in IHS6</strong> — codes 42, 48, 49 and 50
+have no factors for non-kilogram units.</li>
+<li><strong>Unit 13, “OTHER (SPECIFY)”</strong> — unmappable by design.
+The household named its own unit, so no general factor can exist.
+Roughly 113 rows in <code>ag_mod_i</code>.</li>
+</ul>
+<p>Do not paper over these. <code>NA</code> is the correct answer, and a
+total computed over the rows that <em>did</em> convert is honest as long
+as you report the coverage. If you have an official NSO factor for any
+of these, please <a href="https://github.com/vituk123/ihsMW/issues/new/choose">contribute
+it</a> — the repository has an issue template for exactly this.</p>
+<hr />
+</div>
+</div>
+<div id="ihs_aggregate-roll-up-to-the-household" class="section level2">
+<h2>8.10 <code>ihs_aggregate()</code> — roll up to the household</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="fu">ihs_aggregate</span>(data, <span class="at">group_col =</span> <span class="st">&quot;case_id&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>members <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>  <span class="at">case_id   =</span> <span class="fu">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>, <span class="st">&quot;B&quot;</span>),</span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>  <span class="at">income    =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">500</span>, <span class="dv">200</span>, <span class="dv">300</span>, <span class="dv">250</span>),</span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>  <span class="at">has_radio =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a>  <span class="at">district  =</span> <span class="fu">c</span>(<span class="st">&quot;Lilongwe&quot;</span>, <span class="st">&quot;Lilongwe&quot;</span>, <span class="st">&quot;Blantyre&quot;</span>, <span class="st">&quot;Blantyre&quot;</span>, <span class="st">&quot;Blantyre&quot;</span>)</span>
+<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a>)</span>
+<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a></span>
+<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a><span class="fu">ihs_aggregate</span>(members, <span class="at">group_col =</span> <span class="st">&quot;case_id&quot;</span>)</span>
+<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a><span class="co">#&gt; i Aggregating data by `case_id`...</span></span>
+<span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 x 4</span></span>
+<span id="cb41-11"><a href="#cb41-11" tabindex="-1"></a><span class="co">#&gt;   case_id income has_radio district</span></span>
+<span id="cb41-12"><a href="#cb41-12" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;   </span></span>
+<span id="cb41-13"><a href="#cb41-13" tabindex="-1"></a><span class="co">#&gt; 1 A         1500         1 Lilongwe</span></span>
+<span id="cb41-14"><a href="#cb41-14" tabindex="-1"></a><span class="co">#&gt; 2 B          750         0 Blantyre</span></span></code></pre></div>
+<p><strong>Rules.</strong> Continuous numeric columns are summed; 0/1
+columns become a logical OR; logical columns become <code>any()</code>;
+character and factor columns take their single distinct value, or the
+distinct values joined with <code>&quot; | &quot;</code>; anything else is dropped
+with a warning.</p>
+<p><strong>Watch out:</strong> summing is right for quantities and
+expenditures and wrong for ages, prices and rates. Select your columns
+before calling, or aggregate those yourself.</p>
+<hr />
+</div>
+<div id="ihs_deflate-nominal-to-real" class="section level2">
+<h2>8.11 <code>ihs_deflate()</code> — nominal to real</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a><span class="fu">ihs_deflate</span>(data, value_cols, <span class="at">round =</span> <span class="cn">NULL</span>, <span class="at">base_year =</span> <span class="dv">2019</span>)</span></code></pre></div>
+<p>Converts nominal kwacha to constant-price kwacha so figures from
+different rounds can be compared.</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>pooled <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>  <span class="at">food_exp  =</span> <span class="fu">c</span>(<span class="dv">1000</span>, <span class="dv">1000</span>, <span class="dv">1000</span>, <span class="dv">1000</span>, <span class="dv">1000</span>),</span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a>  <span class="at">ihs_round =</span> <span class="fu">c</span>(<span class="st">&quot;IHS2&quot;</span>, <span class="st">&quot;IHS3&quot;</span>, <span class="st">&quot;IHS4&quot;</span>, <span class="st">&quot;IHS5&quot;</span>, <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a>)</span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a><span class="fu">ihs_deflate</span>(pooled, <span class="at">value_cols =</span> <span class="st">&quot;food_exp&quot;</span>)</span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a><span class="co">#&gt; Auto-detected round(s) from `ihs_round`: &quot;IHS2&quot;, &quot;IHS3&quot;, &quot;IHS4&quot;, &quot;IHS5&quot;, and</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a><span class="co">#&gt; &quot;IHS6&quot;</span></span>
+<span id="cb43-9"><a href="#cb43-9" tabindex="-1"></a><span class="co">#&gt; ! CPI for 2024 are provisional and may be revised.</span></span>
+<span id="cb43-10"><a href="#cb43-10" tabindex="-1"></a><span class="co">#&gt; i Bundled series retrieved 2026-07-29. Rebuild with &#39;data-raw/02_build_cpi.R&#39;</span></span>
+<span id="cb43-11"><a href="#cb43-11" tabindex="-1"></a><span class="co">#&gt;   to refresh.</span></span>
+<span id="cb43-12"><a href="#cb43-12" tabindex="-1"></a><span class="co">#&gt; Deflated `food_exp` across 5 round(s) to base year 2019.</span></span>
+<span id="cb43-13"><a href="#cb43-13" tabindex="-1"></a><span class="co">#&gt;   food_exp ihs_round food_exp_real</span></span>
+<span id="cb43-14"><a href="#cb43-14" tabindex="-1"></a><span class="co">#&gt; 1     1000      IHS2     7521.0590</span></span>
+<span id="cb43-15"><a href="#cb43-15" tabindex="-1"></a><span class="co">#&gt; 2     1000      IHS3     4183.4003</span></span>
+<span id="cb43-16"><a href="#cb43-16" tabindex="-1"></a><span class="co">#&gt; 3     1000      IHS4     1371.4787</span></span>
+<span id="cb43-17"><a href="#cb43-17" tabindex="-1"></a><span class="co">#&gt; 4     1000      IHS5     1000.0000</span></span>
+<span id="cb43-18"><a href="#cb43-18" tabindex="-1"></a><span class="co">#&gt; 5     1000      IHS6      408.9428</span></span></code></pre></div>
+<p>1,000 kwacha in 2004 bought what roughly 7,500 bought in 2019; 1,000
+kwacha in 2024 bought about 409-worth. Comparing the nominal column
+across rounds would have reversed the story entirely.</p>
+<p>Because <code>ihs_harmonise()</code> adds <code>ihs_round</code>,
+pooled data deflates in one call with no arguments. For a single-round
+frame, name the round:</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="fu">ihs_deflate</span>(<span class="fu">data.frame</span>(<span class="at">v =</span> <span class="dv">1000</span>), <span class="at">value_cols =</span> <span class="st">&quot;v&quot;</span>, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a><span class="co">#&gt; ! CPI for 2024 are provisional and may be revised.</span></span>
+<span id="cb44-3"><a href="#cb44-3" tabindex="-1"></a><span class="co">#&gt; i Bundled series retrieved 2026-07-29. Rebuild with &#39;data-raw/02_build_cpi.R&#39;</span></span>
+<span id="cb44-4"><a href="#cb44-4" tabindex="-1"></a><span class="co">#&gt;   to refresh.</span></span>
+<span id="cb44-5"><a href="#cb44-5" tabindex="-1"></a><span class="co">#&gt; `v`: deflation factor = 0.4089 (IHS6 -&gt; 2019)</span></span>
+<span id="cb44-6"><a href="#cb44-6" tabindex="-1"></a><span class="co">#&gt;      v   v_real</span></span>
+<span id="cb44-7"><a href="#cb44-7" tabindex="-1"></a><span class="co">#&gt; 1 1000 408.9428</span></span></code></pre></div>
+<p><strong>The CPI series.</strong> World Bank WDI
+<code>FP.CPI.TOTL</code> for Malawi, rebased to 2019 = 100, covering
+2004–2025. Rounds map to their survey midpoint year: IHS2 → 2004, IHS3 →
+2010, IHS4 → 2016, IHS5 → 2019, IHS6 → 2024.</p>
+<p>The table records where each figure came from and whether it is still
+liable to revision:</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a>cpi <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;mw_cpi_annual.csv&quot;</span>, <span class="at">package =</span> <span class="st">&quot;ihsMW&quot;</span>))</span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="fu">tail</span>(cpi[, <span class="fu">c</span>(<span class="st">&quot;year&quot;</span>, <span class="st">&quot;cpi_index&quot;</span>, <span class="st">&quot;retrieved&quot;</span>, <span class="st">&quot;provisional&quot;</span>)], <span class="dv">3</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="co">#&gt;    year cpi_index  retrieved provisional</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="co">#&gt; 20 2023   185.001 2026-07-29       FALSE</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="co">#&gt; 21 2024   244.533 2026-07-29        TRUE</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a><span class="co">#&gt; 22 2025   313.908 2026-07-29        TRUE</span></span></code></pre></div>
+<p>The World Bank revises recent observations as national statistics are
+finalised, so the two most recent years are marked
+<code>provisional</code>. <code>ihs_deflate()</code> says so whenever a
+round you are deflating depends on one — as IHS6 (2024) currently does.
+These are the best figures available; just be aware they can move, and
+record which vintage you used. Refresh with
+<code>data-raw/02_build_cpi.R</code>.</p>
+<p><strong>Watch out:</strong> this is a <strong>national</strong>
+deflator over time. It does not adjust for price differences between
+districts or between urban and rural areas. If your analysis is
+sensitive to those, each round’s consumption aggregate publishes its own
+spatial index — IHS6 ships <code>spatial_indexL</code> (regional price
+level) and <code>price_indexL</code> (combined spatial-temporal) — and
+you should divide by that rather than relying on this function
+alone.</p>
+<hr />
+</div>
+<div id="ihs_svydesign-build-the-survey-design" class="section level2">
+<h2>8.12 <code>ihs_svydesign()</code> — build the survey design</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="fu">ihs_svydesign</span>(data, <span class="at">weight_col =</span> <span class="cn">NULL</span>, <span class="at">strata_col =</span> <span class="cn">NULL</span>, <span class="at">psu_col =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>Wraps <code>survey::svydesign()</code>, detecting the weight, stratum
+and PSU columns.</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>  <span class="at">case_id  =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>,</span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>  <span class="at">ea_id    =</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">each =</span> <span class="dv">4</span>),</span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>  <span class="at">strata   =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;urban&quot;</span>, <span class="st">&quot;rural&quot;</span>), <span class="at">each =</span> <span class="dv">10</span>),</span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>  <span class="at">hh_wgt   =</span> <span class="fu">runif</span>(<span class="dv">20</span>, <span class="fl">0.5</span>, <span class="dv">3</span>),</span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>  <span class="at">food_exp =</span> <span class="fu">rnorm</span>(<span class="dv">20</span>, <span class="dv">5000</span>, <span class="dv">1000</span>)</span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>)</span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a></span>
+<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>dsgn <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(hh)</span>
+<span id="cb47-10"><a href="#cb47-10" tabindex="-1"></a><span class="co">#&gt; Auto-detected weight column: `hh_wgt`</span></span>
+<span id="cb47-11"><a href="#cb47-11" tabindex="-1"></a><span class="co">#&gt; Auto-detected strata column: `strata`</span></span>
+<span id="cb47-12"><a href="#cb47-12" tabindex="-1"></a><span class="co">#&gt; Auto-detected PSU column: `ea_id`</span></span>
+<span id="cb47-13"><a href="#cb47-13" tabindex="-1"></a><span class="co">#&gt; Creating survey design:</span></span>
+<span id="cb47-14"><a href="#cb47-14" tabindex="-1"></a><span class="co">#&gt; * Weights: `hh_wgt`</span></span>
+<span id="cb47-15"><a href="#cb47-15" tabindex="-1"></a><span class="co">#&gt; * Strata: `strata`</span></span>
+<span id="cb47-16"><a href="#cb47-16" tabindex="-1"></a><span class="co">#&gt; * PSU: `ea_id`</span></span>
+<span id="cb47-17"><a href="#cb47-17" tabindex="-1"></a>survey<span class="sc">::</span><span class="fu">svymean</span>(<span class="sc">~</span>food_exp, dsgn, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb47-18"><a href="#cb47-18" tabindex="-1"></a><span class="co">#&gt;          mean     SE</span></span>
+<span id="cb47-19"><a href="#cb47-19" tabindex="-1"></a><span class="co">#&gt; food_exp 4570 166.78</span></span></code></pre></div>
+<p>The same call works on every round: case-insensitive matching handles
+IHS2/IHS3 <code>hhweight</code>, IHS4+ <code>hh_wgt</code>, IHS2–IHS5
+<code>stratum</code> and IHS6 <code>strata</code>.</p>
+<p>If strata or PSU are missing the function degrades gracefully — to a
+clustered design, then to a simple weighted one — and tells you which it
+built. Read that message: a simple weighted design gives correct point
+estimates but standard errors that are too small.</p>
+<hr />
+</div>
+<div id="ihs_report-summary-table" class="section level2">
+<h2>8.13 <code>ihs_report()</code> — summary table</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">ihs_report</span>(data, <span class="at">vars =</span> <span class="cn">NULL</span>, <span class="at">by =</span> <span class="cn">NULL</span>, <span class="at">weights =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a>hh <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a>  <span class="at">hhsize   =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">2</span>),</span>
+<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a>  <span class="at">food_exp =</span> <span class="fu">c</span>(<span class="dv">1200</span>, <span class="dv">3400</span>, <span class="dv">900</span>, <span class="dv">2100</span>, <span class="dv">4500</span>, <span class="dv">700</span>),</span>
+<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a>  <span class="at">region   =</span> <span class="fu">c</span>(<span class="st">&quot;North&quot;</span>, <span class="st">&quot;North&quot;</span>, <span class="st">&quot;Central&quot;</span>, <span class="st">&quot;Central&quot;</span>, <span class="st">&quot;South&quot;</span>, <span class="st">&quot;South&quot;</span>),</span>
+<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a>  <span class="at">hh_wgt   =</span> <span class="fu">c</span>(<span class="fl">1.2</span>, <span class="fl">0.8</span>, <span class="fl">1.5</span>, <span class="fl">1.1</span>, <span class="fl">0.9</span>, <span class="fl">1.3</span>)</span>
+<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a>)</span>
+<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a></span>
+<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a><span class="fu">ihs_report</span>(hh, <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;hhsize&quot;</span>, <span class="st">&quot;food_exp&quot;</span>))</span>
+<span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a><span class="co">#&gt; Summary statistics for 2 variables.</span></span>
+<span id="cb49-10"><a href="#cb49-10" tabindex="-1"></a><span class="co">#&gt;   variable n     mean        sd median min  max pct_missing</span></span>
+<span id="cb49-11"><a href="#cb49-11" tabindex="-1"></a><span class="co">#&gt; 1   hhsize 6    4.500    1.8708    4.5   2    7           0</span></span>
+<span id="cb49-12"><a href="#cb49-12" tabindex="-1"></a><span class="co">#&gt; 2 food_exp 6 2133.333 1526.6521 1650.0 700 4500           0</span></span></code></pre></div>
+<p>Group and weight it:</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">ihs_report</span>(hh, <span class="at">vars =</span> <span class="st">&quot;food_exp&quot;</span>, <span class="at">by =</span> <span class="st">&quot;region&quot;</span>, <span class="at">weights =</span> <span class="st">&quot;hh_wgt&quot;</span>)</span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a><span class="co">#&gt; Summary statistics for 1 variable across 3 groups.</span></span>
+<span id="cb50-3"><a href="#cb50-3" tabindex="-1"></a><span class="co">#&gt;    region variable n     mean        sd median  min  max pct_missing</span></span>
+<span id="cb50-4"><a href="#cb50-4" tabindex="-1"></a><span class="co">#&gt; 1   North food_exp 2 2080.000 1077.7755   2300 1200 3400           0</span></span>
+<span id="cb50-5"><a href="#cb50-5" tabindex="-1"></a><span class="co">#&gt; 2 Central food_exp 2 1407.692  592.8569   1500  900 2100           0</span></span>
+<span id="cb50-6"><a href="#cb50-6" tabindex="-1"></a><span class="co">#&gt; 3   South food_exp 2 2254.546 1868.3311   2600  700 4500           0</span></span></code></pre></div>
+<p>With <code>vars = NULL</code> every numeric column is summarised,
+with weight-like columns excluded automatically.</p>
+<p><strong>Watch out:</strong> only the mean and SD are weighted.
+<code>n</code>, <code>median</code>, <code>min</code>, <code>max</code>
+and <code>pct_missing</code> describe the sample, not the population.
+For weighted quantiles or design-correct standard errors, use
+<code>ihs_svydesign()</code> and the <code>survey</code> package.</p>
+<hr />
+</div>
+</div>
+<div id="complete-worked-workflows" class="section level1">
+<h1>9. Complete worked workflows</h1>
+<p>These use real file names. Substitute your own download paths.</p>
+<div id="workflow-a-one-round-weighted-poverty-statistics" class="section level2">
+<h2>Workflow A — one round, weighted poverty statistics</h2>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="fu">library</span>(survey)</span>
+<span id="cb51-4"><a href="#cb51-4" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="#cb51-5" tabindex="-1"></a><span class="co"># 1. Read</span></span>
+<span id="cb51-6"><a href="#cb51-6" tabindex="-1"></a>demog <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">&quot;IHS6/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb51-7"><a href="#cb51-7" tabindex="-1"></a>cons  <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">&quot;IHS6/ihs6_consumptionaggregates.dta&quot;</span>)</span>
+<span id="cb51-8"><a href="#cb51-8" tabindex="-1"></a></span>
+<span id="cb51-9"><a href="#cb51-9" tabindex="-1"></a><span class="co"># 2. Harmonise (adds `ihs_round`)</span></span>
+<span id="cb51-10"><a href="#cb51-10" tabindex="-1"></a>demog_h <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(demog, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb51-11"><a href="#cb51-11" tabindex="-1"></a>cons_h  <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(cons,  <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb51-12"><a href="#cb51-12" tabindex="-1"></a></span>
+<span id="cb51-13"><a href="#cb51-13" tabindex="-1"></a><span class="co"># 3. Merge, dropping columns that appear in both to avoid .x/.y suffixes</span></span>
+<span id="cb51-14"><a href="#cb51-14" tabindex="-1"></a>dupes  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;region&quot;</span>, <span class="st">&quot;district&quot;</span>, <span class="st">&quot;hhsize&quot;</span>, <span class="st">&quot;hh_wgt&quot;</span>, <span class="st">&quot;ihs_round&quot;</span>)</span>
+<span id="cb51-15"><a href="#cb51-15" tabindex="-1"></a>merged <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(demog_h, cons_h[, <span class="fu">setdiff</span>(<span class="fu">names</span>(cons_h), dupes)])</span>
+<span id="cb51-16"><a href="#cb51-16" tabindex="-1"></a></span>
+<span id="cb51-17"><a href="#cb51-17" tabindex="-1"></a><span class="co"># 4. Clean: recode missing codes, winsorize within region</span></span>
+<span id="cb51-18"><a href="#cb51-18" tabindex="-1"></a>clean <span class="ot">&lt;-</span> <span class="fu">ihs_clean</span>(merged,</span>
+<span id="cb51-19"><a href="#cb51-19" tabindex="-1"></a>                   <span class="at">winsorize_vars =</span> <span class="st">&quot;rexp_cat011&quot;</span>,</span>
+<span id="cb51-20"><a href="#cb51-20" tabindex="-1"></a>                   <span class="at">winsorize_by   =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb51-21"><a href="#cb51-21" tabindex="-1"></a></span>
+<span id="cb51-22"><a href="#cb51-22" tabindex="-1"></a><span class="co"># 5. Deflate to 2019 prices</span></span>
+<span id="cb51-23"><a href="#cb51-23" tabindex="-1"></a>real <span class="ot">&lt;-</span> <span class="fu">ihs_deflate</span>(clean, <span class="at">value_cols =</span> <span class="st">&quot;rexp_cat011_w&quot;</span>)</span>
+<span id="cb51-24"><a href="#cb51-24" tabindex="-1"></a></span>
+<span id="cb51-25"><a href="#cb51-25" tabindex="-1"></a><span class="co"># 6. Survey design</span></span>
+<span id="cb51-26"><a href="#cb51-26" tabindex="-1"></a>dsgn <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(real)</span>
+<span id="cb51-27"><a href="#cb51-27" tabindex="-1"></a></span>
+<span id="cb51-28"><a href="#cb51-28" tabindex="-1"></a><span class="co"># 7. Report</span></span>
+<span id="cb51-29"><a href="#cb51-29" tabindex="-1"></a><span class="fu">ihs_report</span>(real,</span>
+<span id="cb51-30"><a href="#cb51-30" tabindex="-1"></a>           <span class="at">vars    =</span> <span class="fu">c</span>(<span class="st">&quot;hhsize&quot;</span>, <span class="st">&quot;rexp_cat011_w_real&quot;</span>),</span>
+<span id="cb51-31"><a href="#cb51-31" tabindex="-1"></a>           <span class="at">by      =</span> <span class="st">&quot;region&quot;</span>,</span>
+<span id="cb51-32"><a href="#cb51-32" tabindex="-1"></a>           <span class="at">weights =</span> <span class="st">&quot;hh_wgt&quot;</span>)</span>
+<span id="cb51-33"><a href="#cb51-33" tabindex="-1"></a></span>
+<span id="cb51-34"><a href="#cb51-34" tabindex="-1"></a><span class="co"># Design-correct national mean with a standard error</span></span>
+<span id="cb51-35"><a href="#cb51-35" tabindex="-1"></a>survey<span class="sc">::</span><span class="fu">svymean</span>(<span class="sc">~</span>rexp_cat011_w_real, dsgn, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb51-36"><a href="#cb51-36" tabindex="-1"></a></span>
+<span id="cb51-37"><a href="#cb51-37" tabindex="-1"></a><span class="co"># Document what cleaning did, for your appendix</span></span>
+<span id="cb51-38"><a href="#cb51-38" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">attr</span>(clean, <span class="st">&quot;ihs_audit&quot;</span>))</span></code></pre></div>
+</div>
+<div id="workflow-b-pooling-ihs4-ihs5-and-ihs6" class="section level2">
+<h2>Workflow B — pooling IHS4, IHS5 and IHS6</h2>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a></span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a>read_round <span class="ot">&lt;-</span> <span class="cf">function</span>(path, round) {</span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a>  haven<span class="sc">::</span><span class="fu">read_dta</span>(path) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="at">round =</span> round)</span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a>}</span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a></span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a>ihs4 <span class="ot">&lt;-</span> <span class="fu">read_round</span>(<span class="st">&quot;IHS4/ihs4_consumption_aggregate.dta&quot;</span>, <span class="st">&quot;IHS4&quot;</span>)</span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a>ihs5 <span class="ot">&lt;-</span> <span class="fu">read_round</span>(<span class="st">&quot;IHS5/ihs5_consumption_aggregate.dta&quot;</span>, <span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a>ihs6 <span class="ot">&lt;-</span> <span class="fu">read_round</span>(<span class="st">&quot;IHS6/ihs6_consumptionaggregates.dta&quot;</span>, <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a></span>
+<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a><span class="co"># Check comparability BEFORE pooling</span></span>
+<span id="cb52-14"><a href="#cb52-14" tabindex="-1"></a>cw <span class="ot">&lt;-</span> <span class="fu">ihs_crosswalk_check</span>(<span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb52-15"><a href="#cb52-15" tabindex="-1"></a>comparable <span class="ot">&lt;-</span> cw<span class="sc">$</span>harmonised_name[</span>
+<span id="cb52-16"><a href="#cb52-16" tabindex="-1"></a>  <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs4_name) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs5_name) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(cw<span class="sc">$</span>ihs6_name)</span>
+<span id="cb52-17"><a href="#cb52-17" tabindex="-1"></a>]</span>
+<span id="cb52-18"><a href="#cb52-18" tabindex="-1"></a></span>
+<span id="cb52-19"><a href="#cb52-19" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">intersect</span>(comparable, <span class="fu">Reduce</span>(intersect, <span class="fu">list</span>(<span class="fu">names</span>(ihs4), <span class="fu">names</span>(ihs5), <span class="fu">names</span>(ihs6))))</span>
+<span id="cb52-20"><a href="#cb52-20" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">union</span>(keep, <span class="st">&quot;ihs_round&quot;</span>)</span>
+<span id="cb52-21"><a href="#cb52-21" tabindex="-1"></a></span>
+<span id="cb52-22"><a href="#cb52-22" tabindex="-1"></a>pooled <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs4[, keep], ihs5[, keep], ihs6[, keep])</span>
+<span id="cb52-23"><a href="#cb52-23" tabindex="-1"></a></span>
+<span id="cb52-24"><a href="#cb52-24" tabindex="-1"></a><span class="co"># One call deflates every round correctly, using `ihs_round`</span></span>
+<span id="cb52-25"><a href="#cb52-25" tabindex="-1"></a>pooled <span class="ot">&lt;-</span> <span class="fu">ihs_deflate</span>(pooled, <span class="at">value_cols =</span> <span class="st">&quot;rexp_cat011&quot;</span>)</span>
+<span id="cb52-26"><a href="#cb52-26" tabindex="-1"></a></span>
+<span id="cb52-27"><a href="#cb52-27" tabindex="-1"></a><span class="co"># Real food consumption by round, on a common 2019 basis</span></span>
+<span id="cb52-28"><a href="#cb52-28" tabindex="-1"></a><span class="fu">ihs_report</span>(pooled, <span class="at">vars =</span> <span class="st">&quot;rexp_cat011_real&quot;</span>, <span class="at">by =</span> <span class="st">&quot;ihs_round&quot;</span>,</span>
+<span id="cb52-29"><a href="#cb52-29" tabindex="-1"></a>           <span class="at">weights =</span> <span class="st">&quot;hh_wgt&quot;</span>)</span></code></pre></div>
+<p>The <code>comparable</code> step is the important one. Pooling
+variables that do not actually exist in all three rounds produces a
+series with silent structural breaks.</p>
+</div>
+<div id="workflow-c-agricultural-production-per-household" class="section level2">
+<h2>Workflow C — agricultural production per household</h2>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a><span class="fu">library</span>(haven)</span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a><span class="co"># Plot-level harvest, and the household roster for region</span></span>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a>harvest <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">&quot;IHS6/ag_mod_g.dta&quot;</span>)</span>
+<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a>roster  <span class="ot">&lt;-</span> haven<span class="sc">::</span><span class="fu">read_dta</span>(<span class="st">&quot;IHS6/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" tabindex="-1"></a><span class="co"># Attach region so region-specific conversion factors are used</span></span>
+<span id="cb53-9"><a href="#cb53-9" tabindex="-1"></a>harvest <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(harvest, roster[, <span class="fu">c</span>(<span class="st">&quot;case_id&quot;</span>, <span class="st">&quot;region&quot;</span>)], <span class="at">by =</span> <span class="st">&quot;case_id&quot;</span>)</span>
+<span id="cb53-10"><a href="#cb53-10" tabindex="-1"></a></span>
+<span id="cb53-11"><a href="#cb53-11" tabindex="-1"></a><span class="co"># Convert mixed units to kilograms</span></span>
+<span id="cb53-12"><a href="#cb53-12" tabindex="-1"></a>harvest_kg <span class="ot">&lt;-</span> <span class="fu">ihs_convert_units</span>(</span>
+<span id="cb53-13"><a href="#cb53-13" tabindex="-1"></a>  harvest,</span>
+<span id="cb53-14"><a href="#cb53-14" tabindex="-1"></a>  <span class="at">qty_col  =</span> <span class="st">&quot;ag_g13a&quot;</span>,</span>
+<span id="cb53-15"><a href="#cb53-15" tabindex="-1"></a>  <span class="at">unit_col =</span> <span class="st">&quot;ag_g13b&quot;</span>,</span>
+<span id="cb53-16"><a href="#cb53-16" tabindex="-1"></a>  <span class="at">crop_col =</span> <span class="st">&quot;crop_code&quot;</span>,</span>
+<span id="cb53-17"><a href="#cb53-17" tabindex="-1"></a>  <span class="at">unmapped =</span> <span class="st">&quot;warn&quot;</span></span>
+<span id="cb53-18"><a href="#cb53-18" tabindex="-1"></a>)</span>
+<span id="cb53-19"><a href="#cb53-19" tabindex="-1"></a></span>
+<span id="cb53-20"><a href="#cb53-20" tabindex="-1"></a><span class="co"># Sum to household level</span></span>
+<span id="cb53-21"><a href="#cb53-21" tabindex="-1"></a>hh_production <span class="ot">&lt;-</span> <span class="fu">ihs_aggregate</span>(</span>
+<span id="cb53-22"><a href="#cb53-22" tabindex="-1"></a>  harvest_kg[, <span class="fu">c</span>(<span class="st">&quot;case_id&quot;</span>, <span class="st">&quot;ag_g13a_kg&quot;</span>)],</span>
+<span id="cb53-23"><a href="#cb53-23" tabindex="-1"></a>  <span class="at">group_col =</span> <span class="st">&quot;case_id&quot;</span></span>
+<span id="cb53-24"><a href="#cb53-24" tabindex="-1"></a>)</span>
+<span id="cb53-25"><a href="#cb53-25" tabindex="-1"></a></span>
+<span id="cb53-26"><a href="#cb53-26" tabindex="-1"></a><span class="fu">head</span>(hh_production)</span></code></pre></div>
+<p>Note the merge in step two: without a <code>region</code> column,
+every row is converted at Central-region factors.</p>
+<hr />
+</div>
+</div>
+<div id="common-mistakes" class="section level1">
+<h1>10. Common mistakes</h1>
+<p><strong>1. Using the wrong argument names.</strong> The three that
+trip people up most:</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co"># WRONG</span></span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a><span class="fu">ihs_clean</span>(df, <span class="at">winsorize_cols =</span> <span class="st">&quot;x&quot;</span>, <span class="at">strata_col =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a><span class="fu">ihs_winsorize</span>(df, <span class="at">value_col =</span> <span class="st">&quot;x&quot;</span>, <span class="at">strata_col =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a><span class="fu">ihs_aggregate</span>(df, <span class="at">id_cols =</span> <span class="st">&quot;case_id&quot;</span>, <span class="at">val_cols =</span> <span class="st">&quot;x&quot;</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="co"># RIGHT</span></span>
+<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a><span class="fu">ihs_clean</span>(df, <span class="at">winsorize_vars =</span> <span class="st">&quot;x&quot;</span>, <span class="at">winsorize_by =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a><span class="fu">ihs_winsorize</span>(df, <span class="at">vars =</span> <span class="st">&quot;x&quot;</span>, <span class="at">by =</span> <span class="st">&quot;region&quot;</span>)</span>
+<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a><span class="fu">ihs_aggregate</span>(df, <span class="at">group_col =</span> <span class="st">&quot;case_id&quot;</span>)</span></code></pre></div>
+<p><strong>2. Merging before harmonising.</strong> Join keys are
+detected by name, and the names only line up after
+<code>ihs_harmonise()</code>.</p>
+<p><strong>3. Analysing the raw column after winsorizing.</strong>
+<code>ihs_winsorize()</code> writes to <code>x_w</code> and leaves
+<code>x</code> alone. If your results look unchanged, you are probably
+still using <code>x</code>.</p>
+<p><strong>4. Subsetting before building the survey design.</strong>
+This breaks the stratum and cluster structure and gives wrong standard
+errors:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="co"># WRONG</span></span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>rural <span class="ot">&lt;-</span> data[data<span class="sc">$</span>urban <span class="sc">==</span> <span class="dv">0</span>, ]</span>
+<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a>dsgn  <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(rural)</span>
+<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a></span>
+<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a><span class="co"># RIGHT</span></span>
+<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a>dsgn  <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(data)</span>
+<span id="cb55-7"><a href="#cb55-7" tabindex="-1"></a>rural <span class="ot">&lt;-</span> <span class="fu">subset</span>(dsgn, urban <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
+<p><strong>5. Comparing nominal kwacha across rounds.</strong> Always
+<code>ihs_deflate()</code> first. Malawi’s price level rose roughly
+24-fold between 2004 and 2025; nominal comparisons across rounds are not
+merely imprecise, they are usually backwards.</p>
+<p><strong>6. Assuming every variable exists in every round.</strong>
+Check <code>ihs_crosswalk_check()</code> first. Only a small core spans
+all five rounds.</p>
+<p><strong>7. Ignoring the <code>.x</code>/<code>.y</code> warning from
+<code>ihs_merge()</code>.</strong> It is telling you that a column you
+rely on — often the survey weight — has been renamed.</p>
+<p><strong>8. Summing quantities before converting units.</strong> A
+column mixing pails, ox-carts and 50 kg bags cannot be summed. Convert
+first.</p>
+<p><strong>9. Using CSV files for unit conversion.</strong> Some IHS CSV
+exports contain value labels instead of numeric codes. Use the
+<code>.dta</code> distribution.</p>
+<p><strong>10. Treating <code>-99</code> as a real number.</strong> Run
+<code>ihs_standardize_missing()</code> — or <code>ihs_clean()</code>,
+which includes it — before any arithmetic.</p>
+<hr />
+</div>
+<div id="troubleshooting" class="section level1">
+<h1>11. Troubleshooting</h1>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Message</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Invalid round(s) specified: &quot;IHS7&quot;</code></td>
+<td>Unsupported round</td>
+<td>Use IHS2–IHS6. IHS1 is not available.</td>
+</tr>
+<tr class="even">
+<td><code>No columns were mapped to harmonised names</code></td>
+<td>Wrong <code>round</code>, or a file whose variables are not in the
+crosswalk</td>
+<td>Check the <code>round</code> argument first; then
+<code>ihs_search()</code> for one of your column names</td>
+</tr>
+<tr class="odd">
+<td><code>No common ID columns detected across all data.frames</code></td>
+<td>Inputs were not harmonised, or genuinely share no key</td>
+<td>Harmonise first, or pass <code>by</code> explicitly</td>
+</tr>
+<tr class="even">
+<td><code>N columns appeared in more than one input and were suffixed</code></td>
+<td>Shared non-key columns got <code>.x</code>/<code>.y</code></td>
+<td>Drop the duplicates, or add them to <code>by</code></td>
+</tr>
+<tr class="odd">
+<td><code>Merge step 1 expanded rows from X to Y</code></td>
+<td>Many-to-many join</td>
+<td>Aggregate one side to household level first, or add a finer key</td>
+</tr>
+<tr class="even">
+<td><code>Column &#39;crop_code&#39; holds value labels, not numeric codes</code></td>
+<td>CSV export substituted labels for codes</td>
+<td>Read the <code>.dta</code> version with
+<code>haven::read_dta()</code></td>
+</tr>
+<tr class="odd">
+<td><code>Failed to map N crop-unit combinations</code></td>
+<td>No published NSO factor for that pair</td>
+<td>Expected for new IHS6 codes; those rows get <code>NA</code>. Report
+the combination as an issue</td>
+</tr>
+<tr class="even">
+<td><code>Could not detect a survey weight column</code></td>
+<td>Weight renamed by a merge, or absent</td>
+<td>Check for <code>hh_wgt.x</code>; pass <code>weight_col</code>
+explicitly</td>
+</tr>
+<tr class="odd">
+<td><code>Grouping variable &#39;region&#39; not found in data</code></td>
+<td>Column dropped by <code>ihs_harmonise(extra = FALSE)</code> or
+suffixed by a merge</td>
+<td>Check <code>names(data)</code></td>
+</tr>
+<tr class="even">
+<td><code>Base year 2019 not found in CPI table</code></td>
+<td><code>base_year</code> outside 2004–2025</td>
+<td>Choose a year within range</td>
+</tr>
+<tr class="odd">
+<td><code>Cannot determine IHS round</code></td>
+<td>No <code>round</code> argument and no <code>ihs_round</code>
+column</td>
+<td>Pass <code>round</code>, or harmonise first</td>
+</tr>
+</tbody>
+</table>
+<div id="diagnosing-anything-else" class="section level2">
+<h2>Diagnosing anything else</h2>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="co"># What do I actually have?</span></span>
+<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a><span class="fu">names</span>(data)</span>
+<span id="cb56-3"><a href="#cb56-3" tabindex="-1"></a><span class="fu">str</span>(data[, <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>])</span>
+<span id="cb56-4"><a href="#cb56-4" tabindex="-1"></a></span>
+<span id="cb56-5"><a href="#cb56-5" tabindex="-1"></a><span class="co"># Did harmonisation do anything?</span></span>
+<span id="cb56-6"><a href="#cb56-6" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">names</span>(data) <span class="sc">%in%</span> <span class="fu">ihs_crosswalk_check</span>(<span class="at">verbose =</span> <span class="cn">FALSE</span>)<span class="sc">$</span>harmonised_name)</span>
+<span id="cb56-7"><a href="#cb56-7" tabindex="-1"></a></span>
+<span id="cb56-8"><a href="#cb56-8" tabindex="-1"></a><span class="co"># Where did my rows go?</span></span>
+<span id="cb56-9"><a href="#cb56-9" tabindex="-1"></a><span class="fu">attr</span>(merged, <span class="st">&quot;ihs_merge_log&quot;</span>)</span>
+<span id="cb56-10"><a href="#cb56-10" tabindex="-1"></a></span>
+<span id="cb56-11"><a href="#cb56-11" tabindex="-1"></a><span class="co"># What did cleaning change?</span></span>
+<span id="cb56-12"><a href="#cb56-12" tabindex="-1"></a><span class="fu">str</span>(<span class="fu">attr</span>(cleaned, <span class="st">&quot;ihs_audit&quot;</span>))</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="frequently-asked-questions" class="section level1">
+<h1>12. Frequently asked questions</h1>
+<p><strong>Does the package include the survey data?</strong> No. World
+Bank licensing prohibits redistribution. Download it yourself (§5).
+Everything else — crosswalk, conversion factors, CPI — is bundled.</p>
+<p><strong>Does it need an internet connection?</strong>
+No. <code>ihsMW</code> never makes a network request after
+installation.</p>
+<p><strong>Which rounds are supported?</strong> IHS2 (2004/05), IHS3
+(2010/11), IHS4 (2016/17), IHS5 (2019/20) and IHS6 (2024/25). IHS1
+(1997/98) is not available in a usable form.</p>
+<p><strong>Can I compare a variable across all five rounds?</strong>
+Only if it exists in all five, and only 49 do. Check with
+<code>ihs_crosswalk_check()</code> before designing your analysis.
+Coverage from IHS3 onwards is far better — see §8.2 for why, and for the
+numbers.</p>
+<p><strong>Why did <code>ihs_convert_units()</code> return
+<code>NA</code> for a quantity in kilograms?</strong> It should not, and
+no longer does: kilogram quantities convert even for crops the factor
+table does not list. If you still see this, you are on a version before
+1.1.0.</p>
+<p><strong>What changed in IHS6?</strong> Three things matter. The
+design stratum was renamed <code>stratum</code> → <code>strata</code>
+(handled automatically). <code>adulteq</code> (adult equivalents) is
+absent from the consumption aggregate, so per-adult-equivalent measures
+must be constructed yourself. And consumption aggregates are published
+in July 2024 prices — use <code>ihs_deflate()</code> to put every round
+on a common basis.</p>
+<p><strong>A variable I need is missing from the crosswalk.</strong> Use
+<code>ihs_harmonise(extra = TRUE)</code> to keep it, then open a <a href="https://github.com/vituk123/ihsMW/issues/new/choose">crosswalk
+mapping issue</a> so it is available to everyone next release.</p>
+<p><strong>Why did <code>ihs_convert_units()</code> return all
+<code>NA</code>?</strong> Either your crop/unit columns hold value
+labels rather than numeric codes (the function now errors rather than
+returning <code>NA</code> for this), or the crop-unit combinations have
+no published factor. The warning names them.</p>
+<p><strong>Should I winsorize at 1% or 5%?</strong> There is no
+universal answer. <code>c(0.01, 0.99)</code> is the common default for
+consumption. Report whichever you used, and check that your conclusions
+survive the alternative.</p>
+<p><strong>Should I winsorize before or after deflating?</strong>
+Before. Winsorizing bounds the nominal distribution within its own
+round; deflating afterwards is a monotone rescaling that preserves those
+bounds.</p>
+<p><strong>Can I use <code>ihsMW</code> with
+<code>srvyr</code>?</strong> Yes. <code>ihs_svydesign()</code> returns a
+standard <code>survey.design2</code>, so
+<code>srvyr::as_survey(dsgn)</code> works directly.</p>
+<p><strong>Is the CPI series the official NSO one?</strong> It is the
+World Bank WDI series <code>FP.CPI.TOTL</code> for Malawi, rebased to
+2019 = 100. WDI is compiled from NSO returns but the two can differ
+slightly in revision timing. If your work requires the NSO series
+exactly, substitute it — the file is a plain CSV at
+<code>system.file(&quot;extdata&quot;, &quot;mw_cpi_annual.csv&quot;, package = &quot;ihsMW&quot;)</code>.</p>
+<p><strong>How do I cite this?</strong> See §14.</p>
+<hr />
+</div>
+<div id="a.-known-limitations" class="section level1">
+<h1>12a. Known limitations</h1>
+<p>Stated plainly, so you can judge whether they affect your work. None
+of these are hidden by the package — each one surfaces as a message, an
+<code>NA</code>, or a column you can inspect.</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Limitation</th>
+<th>What it means for you</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Thin full-series coverage.</strong> Only 49 variables span
+all five rounds</td>
+<td>IHS2 is a genuinely smaller instrument, but the crosswalk also
+under-links it because it matches mostly on variable <em>names</em> and
+IHS2 used a different scheme</td>
+<td>Improvable — label-based matching would recover more. Contributions
+welcome</td>
+</tr>
+<tr class="even">
+<td><strong>~270 IHS6 variables flagged
+<code>needs_review</code></strong></td>
+<td>New in IHS6 and not cross-checked against an earlier instrument.
+Confirm the concept before pooling across rounds</td>
+<td>Inspect via the <code>needs_review</code> column</td>
+</tr>
+<tr class="odd">
+<td><strong>~10% of IHS6 crop sales rows do not convert</strong></td>
+<td>Units 6, 7 and 10 and crops 42, 48–50 have no published NSO factor;
+unit 13 is “OTHER (SPECIFY)” and never will</td>
+<td>Partly fixable with official NSO data</td>
+</tr>
+<tr class="even">
+<td><strong>No spatial price adjustment</strong></td>
+<td><code>ihs_deflate()</code> is a national deflator over time
+only</td>
+<td>Use the round’s own <code>spatial_indexL</code> if you need it</td>
+</tr>
+<tr class="odd">
+<td><strong>The two most recent CPI years are provisional</strong></td>
+<td>Real values for IHS6 can shift when the World Bank revises 2024</td>
+<td><code>ihs_deflate()</code> tells you; refresh with
+<code>data-raw/02_build_cpi.R</code></td>
+</tr>
+<tr class="even">
+<td><strong>No cross-round household panel linking</strong></td>
+<td><code>ihs_panel_ids()</code> gives you the ID columns, but the
+linking and attrition logic is yours</td>
+<td>Out of scope by design</td>
+</tr>
+</tbody>
+</table>
+<p>The general principle: where <code>ihsMW</code> cannot give you a
+defensible answer it gives you <code>NA</code> and says why. It never
+invents a number to fill a gap.</p>
+<hr />
+</div>
+<div id="best-practices" class="section level1">
+<h1>13. Best practices</h1>
+<p><strong>Script everything; click nothing.</strong> The whole point of
+<code>ihsMW</code> is that your cleaning decisions live in
+version-controlled code rather than in a colleague’s memory.</p>
+<p><strong>Keep the audit trail.</strong> Save
+<code>attr(x, &quot;ihs_audit&quot;)</code> alongside your results. It answers the
+outlier and missing-data questions reviewers always ask.</p>
+<p><strong>Check comparability before pooling.</strong> Run
+<code>ihs_crosswalk_check()</code> and filter to variables that
+genuinely exist in every round you use.</p>
+<p><strong>Deflate before comparing money across rounds.</strong> Every
+time.</p>
+<p><strong>Winsorize within strata.</strong> A national threshold
+systematically over-trims the top of poorer strata. Pass
+<code>by</code>.</p>
+<p><strong>Build the design once, on the full data.</strong> Subset the
+design object, never the data frame.</p>
+<p><strong>Read the console messages.</strong> <code>ihsMW</code> is
+deliberately chatty about what it auto-detected. The messages tell you
+which weight column it found and which join keys it used — the two
+things most likely to be silently wrong.</p>
+<p><strong>Report your parameters.</strong> Winsorization percentiles,
+base year, which rounds and which variables. A reader should be able to
+reproduce your table from your methods section.</p>
+<p><strong>Pin your versions.</strong> Record
+<code>packageVersion(&quot;ihsMW&quot;)</code> in your output, or use
+<code>renv</code>. The crosswalk grows between releases.</p>
+<p><strong>Prefer <code>.dta</code> over <code>.csv</code>.</strong>
+Numeric codes and preserved variable labels.</p>
+<hr />
+</div>
+<div id="citation" class="section level1">
+<h1>14. Citation</h1>
+<p>To cite the package:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="fu">citation</span>(<span class="st">&quot;ihsMW&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode bibtex"><code class="sourceCode bibtex"><span id="cb58-1"><a href="#cb58-1" tabindex="-1"></a><span class="va">@Manual</span>{<span class="ot">ihsMW</span>,</span>
+<span id="cb58-2"><a href="#cb58-2" tabindex="-1"></a>  <span class="dt">title</span>  = {ihsMW: Clean and Harmonise Malawi Integrated Household Survey Data},</span>
+<span id="cb58-3"><a href="#cb58-3" tabindex="-1"></a>  <span class="dt">author</span> = {Vitumbiko Kayuni},</span>
+<span id="cb58-4"><a href="#cb58-4" tabindex="-1"></a>  <span class="dt">year</span>   = {2026},</span>
+<span id="cb58-5"><a href="#cb58-5" tabindex="-1"></a>  <span class="dt">note</span>   = {R package version 1.1.1},</span>
+<span id="cb58-6"><a href="#cb58-6" tabindex="-1"></a>  <span class="dt">url</span>    = {https://github.com/vituk123/ihsMW},</span>
+<span id="cb58-7"><a href="#cb58-7" tabindex="-1"></a>}</span></code></pre></div>
+<p><strong>Also cite the data.</strong> <code>ihsMW</code> is a tool,
+not a source. Any publication using IHS microdata must cite the National
+Statistical Office of Malawi and the World Bank LSMS programme. Each
+round’s Basic Information Document gives the exact required form — use
+it, because the requirement is a condition of your data access
+agreement.</p>
+<p><strong>Cite the reference data if you rely on it.</strong> The crop
+conversion factors are NSO’s; the CPI series is World Bank WDI
+<code>FP.CPI.TOTL</code>.</p>
+<hr />
+</div>
+<div id="getting-help-and-contributing" class="section level1">
+<h1>15. Getting help and contributing</h1>
+<ul>
+<li><strong>Documentation:</strong> <a href="https://vituk123.github.io/ihsMW/" class="uri">https://vituk123.github.io/ihsMW/</a></li>
+<li><strong>Bug reports:</strong> <a href="https://github.com/vituk123/ihsMW/issues" class="uri">https://github.com/vituk123/ihsMW/issues</a></li>
+<li><strong>Crosswalk mappings and conversion factors:</strong> the
+repository has dedicated issue templates. A mapping you add helps
+everyone working on the IHS.</li>
+</ul>
+<p>When reporting a bug, include the output of
+<code>sessionInfo()</code>, the version from
+<code>packageVersion(&quot;ihsMW&quot;)</code>, and a minimal reproducible example
+using synthetic data rather than microdata you are not licensed to
+share.</p>
+<hr />
+<pre><code>#&gt; Generated with ihsMW 1.1.1 on 29 July 2026</code></pre>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

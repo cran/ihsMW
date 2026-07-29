@@ -14,7 +14,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-The `ihsMW` package is a dedicated toolkit designed to clean, harmonise, and aggregate household survey data from the Malawi Integrated Household Survey (IHS) series. It is built to support researchers and analysts working with the IHS2 (2004/05), IHS3 (2010/11), IHS4 (2016/17), and IHS5 (2019/20) datasets.
+The `ihsMW` package is a dedicated toolkit designed to clean, harmonise, and aggregate household survey data from the Malawi Integrated Household Survey (IHS) series. It supports IHS2 (2004/05), IHS3 (2010/11), IHS4 (2016/17), IHS5 (2019/20) and IHS6 (2024/25).
+
+> For a complete standalone manual covering every function, worked end-to-end
+> workflows, troubleshooting and FAQs, see the
+> [ihsMW User Guide](ihsMW-user-guide.html), also available as a
+> [PDF](https://vituk123.github.io/ihsMW/ihsMW-user-guide.pdf) and as
+> [R Markdown source](https://vituk123.github.io/ihsMW/ihsMW-user-guide.Rmd).
 
 ## 1. Installation
 
@@ -42,6 +48,7 @@ The Malawi National Statistical Office (NSO) conducts the Integrated Household S
 - **IHS3**: 2010–2011
 - **IHS4**: 2016–2017
 - **IHS5**: 2019–2020
+- **IHS6**: 2024–2025
 
 Due to licensing restrictions, the raw microdata cannot be redistributed directly within R packages. Researchers must first register and manually download the survey data in Stata (`.dta`) format from the [World Bank Microdata Library](https://microdata.worldbank.org/).
 
@@ -90,49 +97,61 @@ ihs_crosswalk_check()
 # Convert standard survey missing codes (-99, -98, etc.) to NA
 df_clean <- ihs_standardize_missing(harmonised_data)
 
-# Winsorize outliers (e.g. food expenditure) stratified by urban/rural
-df_winsor <- ihs_winsorize(df_clean, value_col = "food_exp", strata_col = "urban")
+# Winsorize outliers (e.g. food expenditure) stratified by urban/rural.
+# This adds a `food_exp_w` column and leaves `food_exp` untouched.
+df_winsor <- ihs_winsorize(df_clean, vars = "food_exp", by = "urban")
 
 # Run the master cleaning wrapper which applies both steps and logs changes
 df_cleaned <- ihs_clean(
   data = harmonised_data,
-  missing_cols = c("food_exp", "nonfood_exp"),
-  winsorize_cols = "food_exp",
-  strata_col = "urban"
+  winsorize_vars = c("food_exp", "nonfood_exp"),
+  winsorize_by = "urban"
 )
+
+# Every transformation is recorded on the result
+str(attr(df_cleaned, "ihs_audit"))
 ```
 
 ## 6. Unit Conversion
 
 Agricultural modules in the IHS allow households to report harvest quantities in non-standard units (e.g., pails, basins, ox-carts, bags) rather than standard kilograms. `ihsMW` bundles official NSO conversion factors to convert these quantities to standard kilograms:
 
-```{r eval=FALSE}
-# Convert quantities reported in non-standard units to kilograms
+```{r}
+library(ihsMW)
+
+# A `region` column, if present, is detected automatically and used to pick
+# region-specific factors. There is no `region_col` argument.
 crop_data <- data.frame(
   crop_code = c(1, 2),
   unit_code = c(3, 4),
-  quantity = c(10, 5),
-  region = c(1, 2)
+  quantity  = c(10, 5),
+  region    = c(1, 2)
 )
 
 crop_data_kg <- ihs_convert_units(
-  data = crop_data,
+  data     = crop_data,
   crop_col = "crop_code",
   unit_col = "unit_code",
-  qty_col = "quantity",
-  region_col = "region"
+  qty_col  = "quantity"
 )
+
+crop_data_kg
 ```
+
+Combinations with no official factor return `NA` rather than a guessed number, and the function tells you which ones failed.
 
 ## 7. Aggregation
 
-To aggregate member-level or agricultural plot-level data up to the household level, use `ihs_aggregate()`:
+To aggregate member-level or agricultural plot-level data up to the household level, use `ihs_aggregate()`. It takes a single grouping column and infers a sensible aggregation for every other column:
 
-```{r eval=FALSE}
-# Aggregate individual-level education to household level
-hh_edu <- ihs_aggregate(
-  data = member_data,
-  id_cols = "case_id",
-  val_cols = c("years_education", "completed_primary")
+```{r}
+member_data <- data.frame(
+  case_id           = c("A", "A", "B", "B"),
+  years_education   = c(8, 12, 4, 6),
+  completed_primary = c(1, 1, 0, 1)
 )
+
+ihs_aggregate(member_data, group_col = "case_id")
 ```
+
+Continuous columns are summed, 0/1 columns become a logical OR, and text columns collapse to their single distinct value. Select your columns before calling if summing is not what you want.

@@ -24,11 +24,27 @@ Merges two or more harmonised data.frames, auto-detecting common ID columns
 when \code{by} is not specified. Warns on unexpected row expansion from
 many-to-many joins.
 }
-\examples{
-\dontrun{
-  hh <- haven::read_dta("hh_mod_a.dta") |> ihs_harmonise("IHS5")
-  ag <- haven::read_dta("ag_mod_a.dta") |> ihs_harmonise("IHS5")
-  merged <- ihs_merge(hh, ag)
+\section{Auto-detected keys}{
+
+When \code{by} is \code{NULL} the join keys are the intersection of
+\code{case_id}, \code{hhid}, \code{hh_id}, \code{HHID}, \code{ea_id} and
+\code{PID} with the columns common to every input. The detected keys are
+always printed - read them, because joining household modules on
+\code{PID} when you meant \code{case_id} silently changes your sample.
 }
+
+\examples{
+hh <- data.frame(case_id = c("A", "B", "C"), hhsize = c(4, 6, 3))
+ag <- data.frame(case_id = c("A", "B", "D"), harvest_kg = c(120, 340, 90))
+
+# Left join on the auto-detected key, keeping every household
+merged <- ihs_merge(hh, ag)
+merged
+
+# Only households present in both modules
+ihs_merge(hh, ag, type = "inner")
+
+# Row counts at each step
+attr(merged, "ihs_merge_log")
 
 }

@@ -9,12 +9,16 @@ ihs_search(keyword, round = NULL, fields = c("name", "label", "module"))
 \arguments{
 \item{keyword}{A single search string to find (case-insensitive).}
 
-\item{round}{Limits search to a specific round. Valid inputs are \code{"IHS2"}, \code{"IHS3"}, \code{"IHS4"}, \code{"IHS5"}. Defaults to \code{NULL} (all rounds).}
+\item{round}{Limits the search to variables that exist in a specific round.
+Valid inputs are \code{"IHS2"}, \code{"IHS3"}, \code{"IHS4"},
+\code{"IHS5"}, and \code{"IHS6"}. Defaults to \code{NULL} (all rounds).}
 
 \item{fields}{A character vector of fields to include in the search. Valid fields are \code{"name"}, \code{"label"}, and \code{"module"}.}
 }
 \value{
-A tibble with cross-round harmonised search results.
+A tibble with one row per matching harmonised variable and one
+  \code{ihs*_name} column per survey round, plus \code{n_rounds} (how many
+  rounds the variable appears in) and \code{needs_review}.
 }
 \description{
 Searches the manual harmonisation crosswalk bundled within \code{ihsMW} for specific variables.
@@ -23,4 +27,7 @@ Searches the manual harmonisation crosswalk bundled within \code{ihsMW} for spec
 ihs_search("consumption")
 ihs_search("expenditure", round = "IHS5")
 ihs_search("age", fields = c("name", "label"))
+
+# Variables that are new in IHS6
+ihs_search("livestock", round = "IHS6")
 }

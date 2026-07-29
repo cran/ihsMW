@@ -361,9 +361,9 @@ tedious.</p>
 <div id="the-crosswalk" class="section level2">
 <h2>2. The Crosswalk</h2>
 <p>To resolve this, <code>ihsMW</code> bundles a static crosswalk
-database containing mappings for over 5,800 variables across IHS2, IHS3,
-IHS4, and IHS5. It acts as a translation layer, mapping round-specific
-variable names to consistent, harmonised names.</p>
+database containing mappings for over 6,400 variables across IHS2, IHS3,
+IHS4, IHS5, and IHS6. It acts as a translation layer, mapping
+round-specific variable names to consistent, harmonised names.</p>
 <p>You can inspect the crosswalk programmatically:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
@@ -398,20 +398,59 @@ together:</p>
 <span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>ihs5_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>)</span>
 <span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>ihs5_harm <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs5_raw, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
 <span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Bind rows - ihs_harmonise adds an `ihs_round` column automatically</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>pooled_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs4_harm, ihs5_harm)</span></code></pre></div>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co"># Load and harmonise IHS6</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>ihs6_raw <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS6/hh_mod_a_filt.dta&quot;</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>ihs6_harm <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(ihs6_raw, <span class="at">round =</span> <span class="st">&quot;IHS6&quot;</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co"># Bind rows - ihs_harmonise adds an `ihs_round` column automatically</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>pooled_data <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(ihs4_harm, ihs5_harm, ihs6_harm)</span></code></pre></div>
+<p>Before pooling, check how many of your variables actually survive
+across every round you intend to use. Coverage is far from
+universal:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">library</span>(ihsMW)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>cw <span class="ot">&lt;-</span> <span class="fu">ihs_crosswalk_check</span>(<span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">table</span>(cw<span class="sc">$</span>n_rounds_avail)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="co">#&gt;    1    2    3    4    5 </span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">#&gt; 3293  664 1165 1311   49</span></span></code></pre></div>
+<p>Only a small core of variables appears in all five rounds. Everything
+else needs a narrower round window or a concept-level judgement call
+from you.</p>
+</div>
+<div id="a.-what-changed-in-ihs6" class="section level2">
+<h2>4a. What changed in IHS6</h2>
+<p>IHS6 (2024/25) is largely continuous with IHS5, but three differences
+matter:</p>
+<ul>
+<li>the design <strong>stratum column was renamed</strong> from
+<code>stratum</code> to <code>strata</code>.
+<code>ihs_svydesign()</code> and <code>ihs_panel_ids()</code> both
+handle this, but hard-coded <code>stratum</code> references in your own
+scripts will break;</li>
+<li><strong><code>adulteq</code> (adult equivalents) is not
+present</strong> in the IHS6 consumption aggregate, so
+per-adult-equivalent measures need to be constructed yourself;</li>
+<li>consumption aggregates are published in <strong>July 2024
+prices</strong>, not the earlier base. Use <code>ihs_deflate()</code> to
+put every round on a common basis before comparing.</li>
+</ul>
+<p>Some IHS6 crop and unit codes are also new and have no published NSO
+conversion factor yet; <code>ihs_convert_units()</code> returns
+<code>NA</code> for those rows and names the combinations it could not
+map.</p>
 </div>
 <div id="merging-modules" class="section level2">
 <h2>5. Merging Modules</h2>
 <p>Within a single survey round, information is split across multiple
 modules (e.g., household demographics, agriculture, food consumption).
 Use <code>ihs_merge()</code> to merge these dataframes:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Load household demographics and crop harvest modules</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>hh_demog <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>hh_agri <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/ag_mod_i.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="co"># Merge modules - automatically detects common ID columns (e.g., case_id)</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(hh_demog, hh_agri)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Load household demographics and crop harvest modules</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>hh_demog <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/hh_mod_a_filt.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>hh_agri <span class="ot">&lt;-</span> <span class="fu">read_dta</span>(<span class="st">&quot;path/to/IHS5/ag_mod_i.dta&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">ihs_harmonise</span>(<span class="st">&quot;IHS5&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Merge modules - automatically detects common ID columns (e.g., case_id)</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>merged_data <span class="ot">&lt;-</span> <span class="fu">ihs_merge</span>(hh_demog, hh_agri)</span></code></pre></div>
 <p><code>ihs_merge()</code> checks if the join type results in
 unexpected row expansion and issues a warning if many-to-many joins
 occur.</p>
@@ -423,25 +462,25 @@ sales) across different years, nominal values must be deflated to
 account for inflation. <code>ihs_deflate()</code> uses bundled Malawi
 Consumer Price Index (CPI) data to convert nominal values to real
 values, with 2019 (IHS5 baseline) as the default reference year:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Deflate expenditure variables to 2019 real prices</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>real_data <span class="ot">&lt;-</span> <span class="fu">ihs_deflate</span>(</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">data =</span> pooled_data,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="at">value_cols =</span> <span class="fu">c</span>(<span class="st">&quot;consumption_nominal&quot;</span>, <span class="st">&quot;food_exp_nominal&quot;</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># This creates new columns: `consumption_nominal_real` and `food_exp_nominal_real`</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Deflate expenditure variables to 2019 real prices</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>real_data <span class="ot">&lt;-</span> <span class="fu">ihs_deflate</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">data =</span> pooled_data,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">value_cols =</span> <span class="fu">c</span>(<span class="st">&quot;consumption_nominal&quot;</span>, <span class="st">&quot;food_exp_nominal&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>)</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># This creates new columns: `consumption_nominal_real` and `food_exp_nominal_real`</span></span></code></pre></div>
 </div>
 <div id="quality-checks" class="section level2">
 <h2>7. Quality Checks</h2>
 <p>To verify that the crosswalk mappings are valid and check how many
 variables are successfully mapped, use
 <code>ihs_crosswalk_check()</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">ihs_crosswalk_check</span>()</span></code></pre></div>
 <p>Additionally, <code>ihs_panel_ids()</code> returns the standard ID
 columns (e.g. household ID, individual ID, enumeration area ID, strata,
 weights) for a given round to help you construct panel keys or verify
 design structures:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Get standard ID columns for IHS5</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Get standard ID columns for IHS5</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">ihs_panel_ids</span>(<span class="st">&quot;IHS5&quot;</span>)</span></code></pre></div>
 </div>
 
 

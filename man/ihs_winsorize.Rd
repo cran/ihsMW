@@ -16,10 +16,36 @@ ihs_winsorize(data, vars, by = NULL, probs = c(0.01, 0.99))
 \item{probs}{Numeric vector of lower and upper quantiles. Default `c(0.01, 0.99)`}
 }
 \value{
-A data.frame with new `*_w` columns added.
+A data.frame with new `*_w` columns added, carrying an
+  `ihs_winsorized_vars` attribute recording how many observations were
+  capped at each bound.
 }
 \description{
 Caps extreme outliers at specified percentiles. Crucially, this function allows for 
 stratified winsorization (e.g., by region) to avoid over-trimming poor/rich areas, 
 and it creates new `_w` suffixed columns to preserve raw data provenance.
+}
+\section{Why stratify}{
+
+A single national 99th percentile treats the richest rural households as
+outliers because the urban distribution sits far above them. Passing `by`
+computes the cut-points separately within each stratum, which preserves the
+shape of both distributions.
+}
+
+\examples{
+df <- data.frame(
+  region = rep(c("North", "South"), each = 50),
+  cons   = c(rnorm(50, 100, 10), rnorm(50, 500, 50))
+)
+
+# Global thresholds
+g <- ihs_winsorize(df, vars = "cons", probs = c(0.05, 0.95))
+
+# Thresholds computed within each region
+s <- ihs_winsorize(df, vars = "cons", by = "region", probs = c(0.05, 0.95))
+
+# The raw column is never modified
+identical(g$cons, df$cons)
+attr(s, "ihs_winsorized_vars")
 }

@@ -25,11 +25,36 @@ A \code{survey.design2} object from the \pkg{survey} package.
 Wraps \code{survey::svydesign()} with automatic detection of standard IHS
 weight, strata, and PSU columns from harmonised data.
 }
-\examples{
-\dontrun{
-  library(survey)
-  dsgn <- ihs_svydesign(harmonised_data)
-  survey::svymean(~rexp_cat01, dsgn, na.rm = TRUE)
+\section{Detected column names}{
+
+Weights are looked up as \code{hh_wgt}, \code{hhweight}, \code{weight},
+\code{panelweight}, \code{hh_wgt_adj} or \code{hhwght}; strata as
+\code{stratum}, \code{strata}, \code{strataid} or \code{strat}; and PSUs as
+\code{ea_id}, \code{psu}, \code{cluster} or \code{clusterid}. Matching is
+case-insensitive, which is what lets the same call work on IHS2-IHS5
+(\code{stratum}, \code{hhweight}/\code{hh_wgt}) and on IHS6, which renamed
+the stratum column to \code{strata}. The detected names are always printed.
 }
 
+\examples{
+\dontshow{if (requireNamespace("survey", quietly = TRUE)) withAutoprint(\{ # examplesIf}
+hh <- data.frame(
+  case_id = 1:20,
+  ea_id   = rep(1:5, each = 4),
+  strata  = rep(c("urban", "rural"), each = 10),
+  hh_wgt  = runif(20, 0.5, 3),
+  food_exp = rnorm(20, 5000, 1000)
+)
+
+# Weight, stratum and PSU columns are all detected automatically
+dsgn <- ihs_svydesign(hh)
+
+# Population mean with design-correct standard errors
+survey::svymean(~food_exp, dsgn, na.rm = TRUE)
+\dontshow{\}) # examplesIf}
+}
+\seealso{
+\code{\link{ihs_panel_ids}} for the standard design columns of each
+  round, and \code{\link{ihs_report}} for a quick weighted summary table
+  that does not require a design object.
 }

@@ -376,8 +376,9 @@ dataset:</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>harmonised_data <span class="ot">&lt;-</span> <span class="fu">ihs_harmonise</span>(raw_data, <span class="at">round =</span> <span class="st">&quot;IHS5&quot;</span>)</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># Create survey design object</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Automatically detects: hh_wgt/hhweight, stratum/strata, and ea_id/psu</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(harmonised_data)</span></code></pre></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># Automatically detects: hh_wgt/hhweight, stratum (IHS2-IHS5) or strata</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co"># (IHS6), and ea_id/psu</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(harmonised_data)</span></code></pre></div>
 <p>If the standard columns are named differently in your data, you can
 specify them explicitly:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>design <span class="ot">&lt;-</span> <span class="fu">ihs_svydesign</span>(</span>

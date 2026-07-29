@@ -7,20 +7,66 @@
 ihs_convert_units(data, qty_col, unit_col, crop_col, unmapped = "warn")
 }
 \arguments{
-\item{data}{A data.frame}
+\item{data}{A data.frame.}
 
-\item{qty_col}{The name of the column containing the quantity}
+\item{qty_col}{The name of the column containing the quantity.}
 
-\item{unit_col}{The name of the column containing the unit code or name}
+\item{unit_col}{The name of the column containing the unit code.}
 
-\item{crop_col}{The name of the column containing the crop code}
+\item{crop_col}{The name of the column containing the crop code.}
 
-\item{unmapped}{Action to take when a unit cannot be mapped: `"warn"` (default), `"error"`, or `"ignore"`.}
+\item{unmapped}{Action to take when a crop-unit combination cannot be
+mapped: `"warn"` (default), `"error"`, or `"ignore"`.}
 }
 \value{
-A data.frame with a new \code{qty_col_kg} column.
+A data.frame with a new column named \code{<qty_col>_kg}. Rows whose
+  crop-unit combination is not in the factor table get \code{NA}, never a
+  silently wrong number.
 }
 \description{
-Converts reported harvest units (e.g., Pails, Oxcarts, Heaps) into standard kilograms 
-using official NSO crop-specific conversion factors.
+Converts reported harvest units (e.g., Pails, Oxcarts, Heaps) into standard
+kilograms using official NSO crop-specific conversion factors.
+}
+\details{
+IHS agriculture modules let households report quantities in whatever unit
+they actually use, so a raw quantity column mixes kilograms, pails, ox-carts
+and heaps in the same variable. Summing it directly is meaningless. This
+function looks up the right factor for each crop, unit, region and shelling
+condition and returns a comparable kilogram column.
+}
+\section{Matching rules}{
+
+Factors vary by region and by whether the crop was shelled, so the lookup
+resolves in this order:
+\enumerate{
+  \item exact match on crop, unit, region and condition;
+  \item same crop, unit and region, falling back through the condition
+    preference order shelled (1), not applicable (3), unshelled (2);
+  \item the same two steps against the Central region, used as the national
+    fallback when a crop-unit pair has no factor for the row's own region.
+}
+A \code{region} column (or \code{ihs_region} / \code{survey_region}) is
+detected automatically and used if present. Without one, every row is priced
+at Central-region factors and the function says so.
+}
+
+\examples{
+harvest <- data.frame(
+  crop_code = c(1, 1, 1),
+  unit_code = c(1, 2, 3),
+  quantity  = c(100, 2, 5),
+  region    = c(1, 2, 2)
+)
+ihs_convert_units(harvest, qty_col = "quantity",
+                  unit_col = "unit_code", crop_col = "crop_code")
+
+# Unmappable combinations return NA rather than a wrong number
+odd <- data.frame(crop_code = 999, unit_code = 999, quantity = 10)
+suppressWarnings(
+  ihs_convert_units(odd, "quantity", "unit_code", "crop_code")
+)
+}
+\seealso{
+\code{\link{ihs_aggregate}} to total the resulting kilogram column
+  to household level.
 }

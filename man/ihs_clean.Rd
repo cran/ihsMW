@@ -22,10 +22,35 @@ ihs_clean(
 }
 \value{
 A data.frame with cleaning applied. The returned object has an `ihs_audit` attribute
-containing a log of modifications.
+containing a log of modifications: initial and final dimensions, how many
+values were recoded to `NA` in each column, and how many observations each
+winsorized variable had capped at the lower and upper bound.
 }
 \description{
 This wrapper function applies standard cleaning procedures to Malawi IHS data.
 It handles missing value conversions, winsorization of continuous variables,
 and returns an audit log of all transformations applied.
+}
+\examples{
+survey <- data.frame(
+  region   = rep(c("North", "South"), each = 50),
+  food_exp = c(rnorm(50, 100, 10), rnorm(50, 500, 50))
+)
+# A refusal code and an implausible outlier
+survey$food_exp[1] <- -99
+survey$food_exp[60] <- 99999
+
+clean <- ihs_clean(survey, winsorize_vars = "food_exp",
+                   winsorize_by = "region")
+
+# Winsorized values land in a new `_w` column; the raw column is preserved
+head(clean[, c("food_exp", "food_exp_w")])
+
+# Inspect what was changed
+str(attr(clean, "ihs_audit"))
+
+}
+\seealso{
+\code{\link{ihs_standardize_missing}} and
+  \code{\link{ihs_winsorize}}, which this function wraps.
 }

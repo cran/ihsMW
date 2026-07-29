@@ -24,7 +24,7 @@ For instance, the household size indicator is named `hhsize` in some files, `hh_
 
 ## 2. The Crosswalk
 
-To resolve this, `ihsMW` bundles a static crosswalk database containing mappings for over 5,800 variables across IHS2, IHS3, IHS4, and IHS5. It acts as a translation layer, mapping round-specific variable names to consistent, harmonised names.
+To resolve this, `ihsMW` bundles a static crosswalk database containing mappings for over 6,400 variables across IHS2, IHS3, IHS4, IHS5, and IHS6. It acts as a translation layer, mapping round-specific variable names to consistent, harmonised names.
 
 You can inspect the crosswalk programmatically:
 
@@ -65,9 +65,34 @@ ihs4_harm <- ihs_harmonise(ihs4_raw, round = "IHS4")
 ihs5_raw <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
 ihs5_harm <- ihs_harmonise(ihs5_raw, round = "IHS5")
 
+# Load and harmonise IHS6
+ihs6_raw <- read_dta("path/to/IHS6/hh_mod_a_filt.dta")
+ihs6_harm <- ihs_harmonise(ihs6_raw, round = "IHS6")
+
 # Bind rows - ihs_harmonise adds an `ihs_round` column automatically
-pooled_data <- bind_rows(ihs4_harm, ihs5_harm)
+pooled_data <- bind_rows(ihs4_harm, ihs5_harm, ihs6_harm)
 ```
+
+Before pooling, check how many of your variables actually survive across every round you intend to use. Coverage is far from universal:
+
+```{r}
+library(ihsMW)
+
+cw <- ihs_crosswalk_check(verbose = FALSE)
+table(cw$n_rounds_avail)
+```
+
+Only a small core of variables appears in all five rounds. Everything else needs a narrower round window or a concept-level judgement call from you.
+
+## 4a. What changed in IHS6
+
+IHS6 (2024/25) is largely continuous with IHS5, but three differences matter:
+
+- the design **stratum column was renamed** from `stratum` to `strata`. `ihs_svydesign()` and `ihs_panel_ids()` both handle this, but hard-coded `stratum` references in your own scripts will break;
+- **`adulteq` (adult equivalents) is not present** in the IHS6 consumption aggregate, so per-adult-equivalent measures need to be constructed yourself;
+- consumption aggregates are published in **July 2024 prices**, not the earlier base. Use `ihs_deflate()` to put every round on a common basis before comparing.
+
+Some IHS6 crop and unit codes are also new and have no published NSO conversion factor yet; `ihs_convert_units()` returns `NA` for those rows and names the combinations it could not map.
 
 ## 5. Merging Modules
 

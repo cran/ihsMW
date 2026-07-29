@@ -4,16 +4,23 @@
 #' Searches the manual harmonisation crosswalk bundled within \code{ihsMW} for specific variables.
 #'
 #' @param keyword A single search string to find (case-insensitive).
-#' @param round Limits search to a specific round. Valid inputs are \code{"IHS2"}, \code{"IHS3"}, \code{"IHS4"}, \code{"IHS5"}. Defaults to \code{NULL} (all rounds).
+#' @param round Limits the search to variables that exist in a specific round.
+#'   Valid inputs are \code{"IHS2"}, \code{"IHS3"}, \code{"IHS4"},
+#'   \code{"IHS5"}, and \code{"IHS6"}. Defaults to \code{NULL} (all rounds).
 #' @param fields A character vector of fields to include in the search. Valid fields are \code{"name"}, \code{"label"}, and \code{"module"}.
 #'
-#' @return A tibble with cross-round harmonised search results.
+#' @return A tibble with one row per matching harmonised variable and one
+#'   \code{ihs*_name} column per survey round, plus \code{n_rounds} (how many
+#'   rounds the variable appears in) and \code{needs_review}.
 #' @export
 #'
 #' @examples
 #' ihs_search("consumption")
 #' ihs_search("expenditure", round = "IHS5")
 #' ihs_search("age", fields = c("name", "label"))
+#'
+#' # Variables that are new in IHS6
+#' ihs_search("livestock", round = "IHS6")
 ihs_search <- function(keyword, round = NULL, fields = c("name", "label", "module")) {
   fields <- rlang::arg_match(fields, multiple = TRUE)
   
@@ -52,19 +59,26 @@ ihs_search <- function(keyword, round = NULL, fields = c("name", "label", "modul
     res <- res[valid_rows, ]
   }
   
+  # Round columns are discovered rather than hard-coded so that adding a future
+  # round to the crosswalk needs no change here.
+  round_cols <- grep("^ihs[0-9]+_name$", names(cw), value = TRUE)
+
+  # `ihs6_expansion_of` is only present in crosswalks built from v1.1.0 onwards.
+  extras <- intersect("ihs6_expansion_of", names(cw))
+
   res <- res |>
-    dplyr::select(
-      harmonised_name, label, module, topic,
-      ihs2_name, ihs3_name, ihs4_name, ihs5_name,
-      n_rounds, needs_review
-    ) |>
-    dplyr::arrange(dplyr::desc(n_rounds), harmonised_name)
-    
+    dplyr::select(dplyr::all_of(c(
+      "harmonised_name", "label", "module", "topic",
+      round_cols, extras,
+      "n_rounds", "needs_review"
+    ))) |>
+    dplyr::arrange(dplyr::desc(.data$n_rounds), .data$harmonised_name)
+
   if (nrow(res) == 0) {
     cli::cli_inform(c(
       "No variables found matching {.val {keyword}}.",
       ">" = "Try a broader term or check spelling.",
-      "i" = "Use {.fn ihs_variables} to browse all variables."
+      "i" = "Use {.fn ihs_crosswalk_check} to browse the full crosswalk."
     ))
   } else {
     cli::cli_inform("Found {nrow(res)} variable{?s} matching {.val {keyword}}.")

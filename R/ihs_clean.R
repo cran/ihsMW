@@ -10,8 +10,31 @@
 #' @param probs Numeric vector of length 2 specifying the lower and upper quantiles for winsorization. Default is `c(0.01, 0.99)`.
 #' 
 #' @return A data.frame with cleaning applied. The returned object has an `ihs_audit` attribute
-#' containing a log of modifications.
-#' 
+#' containing a log of modifications: initial and final dimensions, how many
+#' values were recoded to `NA` in each column, and how many observations each
+#' winsorized variable had capped at the lower and upper bound.
+#'
+#' @seealso \code{\link{ihs_standardize_missing}} and
+#'   \code{\link{ihs_winsorize}}, which this function wraps.
+#'
+#' @examples
+#' survey <- data.frame(
+#'   region   = rep(c("North", "South"), each = 50),
+#'   food_exp = c(rnorm(50, 100, 10), rnorm(50, 500, 50))
+#' )
+#' # A refusal code and an implausible outlier
+#' survey$food_exp[1] <- -99
+#' survey$food_exp[60] <- 99999
+#'
+#' clean <- ihs_clean(survey, winsorize_vars = "food_exp",
+#'                    winsorize_by = "region")
+#'
+#' # Winsorized values land in a new `_w` column; the raw column is preserved
+#' head(clean[, c("food_exp", "food_exp_w")])
+#'
+#' # Inspect what was changed
+#' str(attr(clean, "ihs_audit"))
+#'
 #' @export
 ihs_clean <- function(data, winsorize_vars = NULL, winsorize_by = NULL, probs = c(0.01, 0.99)) {
   if (!is.data.frame(data)) {
@@ -43,11 +66,30 @@ ihs_clean <- function(data, winsorize_vars = NULL, winsorize_by = NULL, probs = 
 
 #' Standardize Survey Missing Codes
 #'
-#' Converts common negative missing codes (like -99 for "Refused" or -98 for "Don't Know") 
-#' into standard R `NA` values to prevent them from skewing numeric calculations.
+#' Converts common survey missing codes (like -99 for "Refused" or -98 for
+#' "Don't Know") into standard R `NA` values to prevent them from skewing
+#' numeric calculations. The codes recognised are -99, -98, -97, 999, 998 and
+#' 997. Only numeric columns are touched; character columns pass through
+#' untouched.
 #'
 #' @param data A data.frame
-#' @return A data.frame with missing values standardized
+#'
+#' @return A data.frame with missing values standardized, carrying an
+#'   `ihs_missing_conversions` attribute recording how many values were
+#'   recoded in each affected column.
+#'
+#' @section Warning:
+#' 999 is a legitimate value for some variables - a plot area in square metres,
+#' a price in kwacha. Check your variables before relying on the blanket recode,
+#' and pass only the affected columns through this function if in doubt.
+#'
+#' @examples
+#' df <- data.frame(age = c(34, -99, 41, 998), village = c("A", "B", "C", "D"))
+#' clean <- ihs_standardize_missing(df)
+#' clean$age
+#'
+#' # How many values were recoded, by column
+#' attr(clean, "ihs_missing_conversions")
 #' @export
 ihs_standardize_missing <- function(data) {
   missing_codes <- c(-99, -98, -97, 999, 998, 997)
@@ -77,8 +119,32 @@ ihs_standardize_missing <- function(data) {
 #' @param vars Character vector of column names to winsorize
 #' @param by Optional grouping variable name (e.g., "region") for stratified thresholds
 #' @param probs Numeric vector of lower and upper quantiles. Default `c(0.01, 0.99)`
-#' 
-#' @return A data.frame with new `*_w` columns added.
+#'
+#' @return A data.frame with new `*_w` columns added, carrying an
+#'   `ihs_winsorized_vars` attribute recording how many observations were
+#'   capped at each bound.
+#'
+#' @section Why stratify:
+#' A single national 99th percentile treats the richest rural households as
+#' outliers because the urban distribution sits far above them. Passing `by`
+#' computes the cut-points separately within each stratum, which preserves the
+#' shape of both distributions.
+#'
+#' @examples
+#' df <- data.frame(
+#'   region = rep(c("North", "South"), each = 50),
+#'   cons   = c(rnorm(50, 100, 10), rnorm(50, 500, 50))
+#' )
+#'
+#' # Global thresholds
+#' g <- ihs_winsorize(df, vars = "cons", probs = c(0.05, 0.95))
+#'
+#' # Thresholds computed within each region
+#' s <- ihs_winsorize(df, vars = "cons", by = "region", probs = c(0.05, 0.95))
+#'
+#' # The raw column is never modified
+#' identical(g$cons, df$cons)
+#' attr(s, "ihs_winsorized_vars")
 #' @export
 ihs_winsorize <- function(data, vars, by = NULL, probs = c(0.01, 0.99)) {
   if (length(probs) != 2 || probs[1] >= probs[2]) {

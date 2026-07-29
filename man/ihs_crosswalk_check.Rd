@@ -7,21 +7,30 @@
 ihs_crosswalk_check(verbose = TRUE)
 }
 \arguments{
-\item{verbose}{Logical. If \code{TRUE} (default), prints a summary report 
+\item{verbose}{Logical. If \code{TRUE} (default), prints a summary report
 to the console using \code{cli}.}
 }
 \value{
-A \code{tibble} containing the full crosswalk. If \code{verbose} 
-  is \code{TRUE}, also prints a summary.
+Invisibly, a \code{tibble} containing the full crosswalk with one
+  \code{ihs*_name} column per round plus an \code{n_rounds_avail} column
+  counting how many rounds each variable appears in. If \code{verbose}
+  is \code{TRUE}, also prints a summary to the console.
 }
 \description{
-Evaluates the completeness and comparability of variables across the 
-available IHS rounds (IHS2, IHS3, IHS4, IHS5) using the bundled crosswalk.
+Evaluates the completeness and comparability of variables across the
+available IHS rounds (IHS2, IHS3, IHS4, IHS5, IHS6) using the bundled
+crosswalk. Use it to see how many variables are genuinely comparable
+across the full series before committing to a pooled analysis.
 }
 \examples{
-\dontrun{
-  # Check the crosswalk and print a report
-  cw <- ihs_crosswalk_check()
-}
+# Return the crosswalk without printing the report
+cw <- ihs_crosswalk_check(verbose = FALSE)
+nrow(cw)
 
+# Variables available in every round
+sum(cw$n_rounds_avail == max(cw$n_rounds_avail))
+
+}
+\seealso{
+\code{\link{ihs_search}} to look up individual variables.
 }

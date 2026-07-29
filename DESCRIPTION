@@ -1,14 +1,15 @@
 Package: ihsMW
 Title: Clean and Harmonise 'Malawi Integrated Household Survey' Data
-Version: 1.0.0
+Version: 1.1.1
 Authors@R: person("Vitumbiko", "Kayuni",
              email = "vitumbikokayuni@gmail.com",
              role = c("aut", "cre"),
              comment = c(ORCID = "0009-0008-4331-3839"))
-Description: An offline suite of tools to clean, aggregate, and harmonise data 
-    from the 'Malawi Integrated Household Survey' ('IHS'). Provides crop-specific 
-    unit conversions, stratified winsorization, and automatic cross-round harmonisation 
-    for complex survey designs.
+Description: An offline suite of tools to clean, aggregate, and harmonise data
+    from the 'Malawi Integrated Household Survey' ('IHS'), covering rounds two
+    through six (2004 to 2025). Provides crop-specific unit conversions,
+    stratified winsorization, consumer-price deflation, and automatic
+    cross-round harmonisation for complex survey designs.
 License: MIT + file LICENSE
 Depends: R (>= 4.1.0)
 URL: https://github.com/vituk123/ihsMW,
@@ -25,9 +26,9 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
 NeedsCompilation: no
-Packaged: 2026-07-08 01:10:50 UTC; vitumbikokayuni
+Packaged: 2026-07-29 11:24:23 UTC; vitumbikokayuni
 Author: Vitumbiko Kayuni [aut, cre] (ORCID:
     <https://orcid.org/0009-0008-4331-3839>)
 Maintainer: Vitumbiko Kayuni <vitumbikokayuni@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-07-08 05:50:02 UTC
+Date/Publication: 2026-07-29 12:10:01 UTC

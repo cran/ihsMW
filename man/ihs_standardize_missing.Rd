@@ -10,9 +10,29 @@ ihs_standardize_missing(data)
 \item{data}{A data.frame}
 }
 \value{
-A data.frame with missing values standardized
+A data.frame with missing values standardized, carrying an
+  `ihs_missing_conversions` attribute recording how many values were
+  recoded in each affected column.
 }
 \description{
-Converts common negative missing codes (like -99 for "Refused" or -98 for "Don't Know") 
-into standard R `NA` values to prevent them from skewing numeric calculations.
+Converts common survey missing codes (like -99 for "Refused" or -98 for
+"Don't Know") into standard R `NA` values to prevent them from skewing
+numeric calculations. The codes recognised are -99, -98, -97, 999, 998 and
+997. Only numeric columns are touched; character columns pass through
+untouched.
+}
+\section{Warning}{
+
+999 is a legitimate value for some variables - a plot area in square metres,
+a price in kwacha. Check your variables before relying on the blanket recode,
+and pass only the affected columns through this function if in doubt.
+}
+
+\examples{
+df <- data.frame(age = c(34, -99, 41, 998), village = c("A", "B", "C", "D"))
+clean <- ihs_standardize_missing(df)
+clean$age
+
+# How many values were recoded, by column
+attr(clean, "ihs_missing_conversions")
 }

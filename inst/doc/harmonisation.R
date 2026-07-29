@@ -31,8 +31,18 @@ knitr::opts_chunk$set(
 # ihs5_raw <- read_dta("path/to/IHS5/hh_mod_a_filt.dta")
 # ihs5_harm <- ihs_harmonise(ihs5_raw, round = "IHS5")
 # 
+# # Load and harmonise IHS6
+# ihs6_raw <- read_dta("path/to/IHS6/hh_mod_a_filt.dta")
+# ihs6_harm <- ihs_harmonise(ihs6_raw, round = "IHS6")
+# 
 # # Bind rows - ihs_harmonise adds an `ihs_round` column automatically
-# pooled_data <- bind_rows(ihs4_harm, ihs5_harm)
+# pooled_data <- bind_rows(ihs4_harm, ihs5_harm, ihs6_harm)
+
+## -----------------------------------------------------------------------------
+library(ihsMW)
+
+cw <- ihs_crosswalk_check(verbose = FALSE)
+table(cw$n_rounds_avail)
 
 ## ----eval=FALSE---------------------------------------------------------------
 # # Load household demographics and crop harvest modules

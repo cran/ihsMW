@@ -7,17 +7,43 @@
 ihs_harmonise(data, round = "IHS5", extra = FALSE)
 }
 \arguments{
-\item{data}{A data.frame, typically read from a `.dta` file using \code{haven::read_dta}.}
+\item{data}{A data.frame, typically read from a `.dta` file using
+\code{haven::read_dta} or a `.csv` using \code{readr::read_csv}.}
 
-\item{round}{A character string specifying the IHS round (e.g., \code{"IHS5"}, \code{"IHS4"}).}
+\item{round}{A character string specifying the IHS round: one of
+\code{"IHS2"}, \code{"IHS3"}, \code{"IHS4"}, \code{"IHS5"} or
+\code{"IHS6"}.}
 
-\item{extra}{Logical. If FALSE (default), drops columns that are not in the harmonisation 
+\item{extra}{Logical. If FALSE (default), drops columns that are not in the harmonisation
 crosswalk or standard ID columns. If TRUE, keeps all original columns.}
 }
 \value{
-A data.frame with columns renamed to standard `harmonised_name`s where applicable.
+A data.frame with columns renamed to standard `harmonised_name`s
+  where applicable, plus an `ihs_round` column recording which round the
+  rows came from. Stata variable labels are preserved across the rename.
 }
 \description{
-Takes a raw data.frame loaded from a Malawi IHS survey round (e.g. from a `.dta` file) 
-and renames its columns to the standard harmonised variable names defined in the crosswalk.
+Takes a raw data.frame loaded from a Malawi IHS survey round (e.g. from a
+`.dta` or `.csv` file) and renames its columns to the standard harmonised
+variable names defined in the bundled crosswalk. This is the first step of
+almost every `ihsMW` workflow: once column names are harmonised, the same
+downstream code works on any round.
+}
+\details{
+Matching is case-insensitive, so `HHID` and `hhid` are treated as the same
+variable. Each raw column is claimed by at most one crosswalk entry.
+}
+\examples{
+# A miniature stand-in for a raw IHS file
+raw <- data.frame(case_id = c("a", "b"), hhsize = c(4, 6), junk = c(1, 2))
+
+# Harmonise, dropping columns absent from the crosswalk
+ihs_harmonise(raw, round = "IHS6")
+
+# Keep everything, including unmapped columns
+ihs_harmonise(raw, round = "IHS6", extra = TRUE)
+}
+\seealso{
+\code{\link{ihs_search}} to find out what a raw variable is called
+  in each round before harmonising.
 }

@@ -12,10 +12,39 @@ ihs_aggregate(data, group_col = "case_id")
 \item{group_col}{The column name identifying the household (e.g., "case_id" or "y4_hhid")}
 }
 \value{
-A data.frame aggregated to the household level
+A data.frame with one row per value of `group_col`.
 }
 \description{
-Automatically detects variable types and applies sensible aggregations (e.g., `sum` 
-for continuous quantities, `max` or logical OR for dummies). Throws warnings 
-for ambiguous columns rather than failing silently.
+Automatically detects variable types and applies sensible aggregations, so
+that individual-level or plot-level modules can be rolled up to the
+household without hand-writing a `summarise()` call per column.
+}
+\section{Aggregation rules}{
+
+\itemize{
+  \item continuous numeric columns are summed (`na.rm = TRUE`);
+  \item numeric columns containing only 0, 1 and `NA` are treated as dummies
+    and become 1 if any member has a 1 (a logical OR);
+  \item logical columns become `any()`;
+  \item character and factor columns take the single distinct value if there
+    is one, otherwise the distinct values joined with `" | "`;
+  \item anything else is dropped, with a warning naming the column.
+}
+Summing is the right default for quantities and expenditures but not for
+ages or prices - select your columns before calling, or aggregate those
+yourself.
+}
+
+\examples{
+members <- data.frame(
+  case_id    = c("A", "A", "B", "B", "B"),
+  income     = c(1000, 500, 200, 300, 250),
+  has_radio  = c(0, 1, 0, 0, 0),
+  district   = c("Lilongwe", "Lilongwe", "Blantyre", "Blantyre", "Blantyre")
+)
+ihs_aggregate(members, group_col = "case_id")
+}
+\seealso{
+\code{\link{ihs_convert_units}} to put quantities in comparable
+  units before summing them.
 }
